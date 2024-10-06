@@ -38,7 +38,6 @@
 #include "common.hpp"
 
 #include "preprocessor.hpp"
-#include "structs.hpp"
 #include "enums.hpp"
 #include "alias.hpp"
 #include "strings.hpp"
@@ -55,7 +54,6 @@ using namespace pp;
 
 static Preprocessor preprocessor = Preprocessor();
 static Enums enumerators = Enums();
-static Structs structurs = Structs();
 static Strings strings = Strings();
 
 static std::string _basename;
@@ -270,25 +268,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         ln = std::string("");
         return;
     }
-    
-    if (preprocessor.ppl) {
-        // We're presently handling PPL code.
-        preprocessor.parse(ln);
-        if (!preprocessor.ppl) {
-            // Signaling PPL code ending with the #end preprocessor, we clear the line to discard #end, and return to the calling function.
-            ln = std::string("");
-            return;
-        }
-        ln += '\n';
-        return;
-    }
-    
-    if (preprocessor.python) {
-        // We're presently handling Python code.
-        preprocessor.parse(ln);
-        ln += '\n';
-        return;
-    }
+
     
     // Remove any leading white spaces before or after.
     trim(ln);
@@ -395,7 +375,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         singleton->setNestingLevel(singleton->nestingLevel - 1);
         
         if (0 == singleton->nestingLevel) {
-            structurs.removeAllLocalStructs();
             ln = "END;\n";
             return;
         }
@@ -640,9 +619,9 @@ void help(void) {
     std::cout << "  -v                      Display detailed processing information.\n";
     std::cout << "\n";
     std::cout << "  Verbose Flags:\n";
+    std::cout << "     a                    Aliases\n";
     std::cout << "     e                    Enumerator\n";
     std::cout << "     p                    Preprocessor\n";
-    std::cout << "     s                    Structs\n";
     std::cout << "\n";
     std::cout << "Additional Commands:\n";
     std::cout << "  ansiart {-version | -help}\n";
@@ -701,7 +680,6 @@ int main(int argc, char **argv) {
             
             if (args.find("a") != std::string::npos) Singleton::shared()->aliases.verbose = true;
             if (args.find("e") != std::string::npos) enumerators.verbose = true;
-            if (args.find("s") != std::string::npos) structurs.verbose = true;
             if (args.find("p") != std::string::npos) preprocessor.verbose = true;
         
             continue;

@@ -1,17 +1,17 @@
-#define MY_DEFINE "Copyright (c) 2023 Insoft. All rights reserved."
+//#define MY_DEFINE "Copyright (c) 2023 Insoft. All rights reserved."
 
 enum MyEnum {
     Red = 0,
     Blue = 1
-}
+};
 
-fn brach() {
+fn brach(void) {
     if (A == B || B >= 10) {
         return -1;
     }
 }
 
-fn main() {
+fn main(void) {
     var alpha; var beta;
     
     var text = MY_DEFINE;
