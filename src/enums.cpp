@@ -32,18 +32,6 @@
 using namespace pp;
 
 static std::string name;
-static std::string prefix;
-
-static std::string prefixFromName(const std::string& str) {
-    std::string s;
-    std::regex re(R"([A-Z])");
-    
-    for(std::sregex_iterator it = std::sregex_iterator(str.begin(), str.end(), re); it != std::sregex_iterator(); ++it) {
-        s += it->str();
-    }
-    
-    return s;
-}
 
 static bool parseEnum(const std::string& str) {
     std::regex re;
@@ -84,7 +72,7 @@ bool Enums::parse(std::string& str) {
 
 
 void Enums::parseEnumItems(const std::string& str) {
-    std::regex re(R"(([a-zA-Z]\w*) :?= *(\d+))");
+    std::regex re(R"(([a-zA-Z]\w*) *= *(\d+))");
     
     // Create an iterator to go over all matches
     auto matches_begin = std::sregex_iterator(str.begin(), str.end(), re);
@@ -97,8 +85,10 @@ void Enums::parseEnumItems(const std::string& str) {
         Aliases::TIdentity identity;
         identity.type = Aliases::Type::Eenum;
         identity.scope = Aliases::Scope::Auto;
-        identity.real = match[2];
-        identity.identifier = match[1];
+        identity.real = match[2].str();
+        identity.identifier = match[1].str();
+        _identities.push_back(identity);
+        identity.identifier = name + "::" + match[1].str();
         _identities.push_back(identity);
     }
 }

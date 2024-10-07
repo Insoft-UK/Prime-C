@@ -110,13 +110,7 @@ bool Alias::parse(std::string& str) {
     bool parsed = false;
     
     if (singleton->scope == Singleton::Scope::Global) {
-        /*
-         eg. export name:alias(p1, p2:alias, auto:alias)
-         Group  0 export name:alias(p1, p2:alias, auto:alias)
-         1 name:alias
-         2 p1, p2:alias, auto:alias
-         */
-        re = R"(^ *(?:export +)?\b((?:(?:[^\x00-\x7F]|\w)+ *: *)?(?:(?:[a-zA-Z_]\w*::)*?)[a-zA-Z][\w.]*) *\((.*)\))";
+        re = R"(^ *(?:export +)?(?:var +)?([A-Za-z]\w*)\(([A-Za-z]\w*(?:,[A-Za-z]\w*)*)?(?=\)))";
         auto it = std::sregex_token_iterator {
             str.begin(), str.end(), re, {1, 2}
         };

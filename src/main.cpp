@@ -42,8 +42,6 @@
 #include "alias.hpp"
 #include "strings.hpp"
 #include "bitwise.hpp"
-#include "for_next.hpp"
-#include "do_loop.hpp"
 #include "calc.hpp"
 
 #include "build.h"
@@ -106,37 +104,6 @@ static std::string decimalToBase24(long num) {
 
     return base24;
 }
-
-/*
- The `base24ToDecimal` function converts a
- base 24 string (using the characters
- `"0123456789CDFHJKMNRUVWXY"`) into its
- decimal (base 10) equivalent. It validates the
- input for empty strings and invalid characters,
- making it the inverse of the
- `decimalToBase24` function.
- */
-//static long base24ToDecimal(const std::string& base24) {
-//    if (base24.empty()) {
-//        throw std::invalid_argument("Input string is empty.");
-//    }
-//
-//    const std::string base24Chars = "0123456789CDFHJKMNRUVWXY";
-//    long decimalValue = 0;
-//
-//    for (size_t i = 0; i < base24.length(); ++i) {
-//        char currentChar = base24[base24.length() - 1 - i]; // Reverse position
-//        size_t index = base24Chars.find(currentChar);
-//
-//        if (index == std::string::npos) {
-//            throw std::invalid_argument("Invalid character in base 24 string.");
-//        }
-//
-//        decimalValue += index * static_cast<long>(pow(24, i)); // Calculate value
-//    }
-//
-//    return decimalValue;
-//}
 
 static std::string getBuildCode(void) {
     std::string str;
@@ -209,6 +176,94 @@ void translateCLogicalOperatorsToPPL(std::string& str) {
 
 
 // MARK: - Prime-C To PPL Translater...
+void reformatPPLLine(std::string& str) {
+    std::regex re;
+    
+    Strings strings = Strings();
+    
+    /*
+     While formatting the contents, strings may inadvertently undergo formating,
+     leading to potential disruptions in the string's content.
+     
+     To address this issue, we prioritize the preservation of any existing strings.
+     After we prioritize the preservation of any existing strings, we blank out the
+     string/s.
+     
+     Subsequently, after formating, any strings that have been blanked out can be
+     restored to their original state.
+     */
+    strings.preserveStrings(str);
+    strings.blankOutStrings(str);
+    
+    str = removeWhitespaceAroundOperators(str);
+    
+    str = regex_replace(str, std::regex(R"(,)"), ", ");
+    str = regex_replace(str, std::regex(R"(\{)"), "{ ");
+    str = regex_replace(str, std::regex(R"(\})"), " }");
+    str = regex_replace(str, std::regex(R"(^ +(\} *;))"), "$1\n");
+    str = regex_replace(str, std::regex(R"(\{ +\})"), "{}");
+    
+    
+    /*
+     To prevent correcting over-modifications, first replace all double `==` with a single `=`.
+     
+     Converting standalone `=` to `==` initially can lead to unintended changes like `<=`, `>=`,
+     `:=`, and `==` turning into `<==`, `>==`, `:==`, and `===`.
+     
+     By first reverting all double `==` back to a single `=`, and ensuring that only standalone
+     `=` or `:=` with surrounding whitespace are targeted, we can then safely convert `=` to `==`
+     without affecting other operators.
+     */
+    str = regex_replace(str, std::regex(R"(==)"), "=");
+
+    // Ensuring that standalone `≥`, `≤`, `≠`, `=`, `:=`, `+`, `-`, `*` and `/` have surrounding whitespace.
+    re = R"(≥|≤|≠|=|:=|\+|-|\*|\/|▶)";
+    str = regex_replace(str, re, " $0 ");
+    
+    // We now hand the issue of Unary Minus/Operator
+    
+    // Ensuring that `≥`, `≤`, `≠`, `=`, `+`, `-`, `*` and `/` have a whitespace befor `-`.
+    re = R"(([≥≤≠=\+|\-|\*|\/]) +- +)";
+    str = regex_replace(str, re, "$1 -");
+    
+    // Ensuring that `-` in  `{ - `, `( - ` and `[ - ` situations have no surrounding whitespace.
+    re = R"(([({[]) +- +)";
+    str = regex_replace(str, re, "$1-");
+    
+    if (!regex_search(str, std::regex(R"(LOCAL [A-Za-z]\w* = )"))) {
+        // We can now safely convert `=` to `==` without affecting other operators.
+        str = regex_replace(str, std::regex(R"( = )"), " == ");
+    }
+    
+    if (Singleton::Scope::Local == Singleton::shared()->scope) {
+//        if (regex_search(str, std::regex(R"(^(IF|CASE|REPEAT|WHILE|ELSE|UNTIL|THEN|END)\b)"))) {
+//            str.insert(0, std::string((Singleton::shared()->nestingLevel - 1) * INDENT_WIDTH, ' '));
+//        } else {
+//            str.insert(0, std::string(Singleton::shared()->nestingLevel * INDENT_WIDTH, ' '));
+//        }
+        
+//        re = std::regex(R"(^ *\b(THEN)\b)", std::regex_constants::icase);
+//        str = regex_replace(str, re, std::string((Singleton::shared()->nestingLevel - 1) * INDENT_WIDTH, ' ') + "$1");
+        
+    
+        
+//        if (regex_search(str, std::regex(R"(\bEND;$)"))) {
+//            str = regex_replace(str, std::regex(R"(;(.+))"), ";\n" + std::string(Singleton::shared()->nestingLevel * INDENT_WIDTH, ' ') + "$1");
+//        } else {
+//            str = regex_replace(str, std::regex(R"(;(.+))"), ";\n" + std::string((Singleton::shared()->nestingLevel - 1) * INDENT_WIDTH, ' ') + "$1");
+//        }
+    }
+    
+    if (Singleton::Scope::Global == Singleton::shared()->scope) {
+        str = regex_replace(str, std::regex(R"(^ *END;$)"), "$0\n");
+        str = regex_replace(str, std::regex(R"(^ *LOCAL +)"), "");
+    }
+    
+    str = regex_replace(str, std::regex(R"((.+;)(.+)$)"), "$1\n$2");
+    
+    strings.restoreStrings(str);
+}
+
 void capitalizePPLKeywords(std::string& str) {
     std::string result = str;
     std::regex re;
@@ -232,9 +287,10 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     
     Singleton *singleton = Singleton::shared();
     
+
+    
     static bool multiLineComment = false;
     
-    ln = regex_replace(ln, std::regex(R"(\t)"), " "); // Tab to space, future reg-ex will not require to deal with '\t', only spaces.
     
     /*
      While parsing the contents, strings may inadvertently undergo parsing, leading
@@ -249,6 +305,8 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
      */
     strings.preserveStrings(ln);
     strings.blankOutStrings(ln);
+    
+    ln = regex_replace(ln, std::regex(R"(\s+)"), " "); // All multiple whitespaces in succesion to a single space, future reg-ex will not require to deal with '\t', only spaces.
     
     
     if (multiLineComment) {
@@ -270,8 +328,11 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     }
 
     
+    
+    
     // Remove any leading white spaces before or after.
     trim(ln);
+    removeWhitespaceAroundOperators(ln);
     
     re = R"(\#pragma mode *\(.*\)$)";
     if (std::regex_match(ln, re)) {
@@ -280,17 +341,16 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     }
     
     if (preprocessor.parse(ln)) {
-        if (preprocessor.python) {
-            // Indicating Python code ahead with the #PYTHON preprocessor, we maintain the line unchanged and return to the calling function.
-            ln += '\n';
-            return;
-        }
-
         if (!preprocessor.pathname.empty()) {
             // Flagged with #include preprocessor for file inclusion, we process it before continuing.
             translatePrimeCToPPL(preprocessor.pathname, outfile);
         }
 
+        ln = std::string("");
+        return;
+    }
+    
+    if (enumerators.parse(ln)) {
         ln = std::string("");
         return;
     }
@@ -335,31 +395,28 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     Bitwise::parse(ln);
     
     
+    re = R"( *\bvoid\b *)";
+    ln = std::regex_replace(ln, re, "");
     
     Alias::parse(ln);
     ln = singleton->aliases.resolveAllAliasesInText(ln);
     
-    
-    if (enumerators.parse(ln)) {
-        ln = std::string("");
-        return;
-    }
+
     
     // PPL uses := instead of C's = for assignment. Converting all = to PPL style :=
     re = R"(([^:=]|^)(?:=)(?!=))";
     ln = std::regex_replace(ln, re, "$1 := ");
     
-    re = R"( *\b(void|fn)\b *)";
-    ln = std::regex_replace(ln, re, "");
     
     re = R"(\]\[)";
     ln = std::regex_replace(ln, re, ",");
     
+    // Handling of opening brace.
     if (ln == "{") {
         singleton->setNestingLevel(singleton->nestingLevel + 1);
         
         if (singleton->nestingLevel == 1) {
-            ln = "\nBEGIN\n";
+            ln = "BEGIN\n";
             return;
         }
         
@@ -370,6 +427,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         }
     }
     
+    // Handling of closing brace.
     if (ln == "}") {
         
         singleton->setNestingLevel(singleton->nestingLevel - 1);
@@ -400,11 +458,11 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
             ln = "KEY " + s + "()";
         }
         
+        re = R"(\b(export|LOCAL)\b +)";
+        ln = std::regex_replace(ln, re, "");
+        
         re = R"(^main\b)";
         ln = std::regex_replace(ln, re, "START");
-        
-        re = R"(var\b)";
-        ln = std::regex_replace(ln, re, "");
     }
 
     
@@ -414,10 +472,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         
         translateCLogicalOperatorsToPPL(ln);
         
-        
-//        ForNext::parse(ln);
-//        DoLoop::parse(ln);
-        
         re = R"(var\b)";
         ln = std::regex_replace(ln, re, "LOCAL");
         re = R"(const\b)";
@@ -426,9 +480,18 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         re = R"(^(if|while|for)\((.+)\)$)";
         ln = std::regex_replace(ln, re, "$1 $2");
         
+        re = R"(^ *while\((.+)\);$)";
+        ln = std::regex_replace(ln, re, "UNTIL NOT($1)");
+        
         if (ln.substr(0, 3) == "if ") {
             openBrace.push_back(std::string(" THEN\n"));
             closingBrace.push_back("END;\n");
+        }
+        
+        if (ln.substr(0, 3) == "do") {
+            ln = "REPEAT";
+            openBrace.push_back("");
+            closingBrace.push_back("");
         }
         
         if (ln.substr(0, 4) == "else") {
@@ -442,38 +505,28 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         }
         
         re = R"(\bfor\b(.*);(.*);(.*))";
-        if (regex_search(ln, match, re)) {
-            std::string matched = match.str();
-            std::sregex_token_iterator it = std::sregex_token_iterator {
-                matched.begin(), matched.end(), re, {1, 2, 3}
-            };
-            std::string statements[3];
-            if (it != std::sregex_token_iterator()) {
-                if (it->matched) statements[0] = *it++;
-                if (it->matched) statements[1] = *it++;
-                if (it->matched) statements[2] = *it++;
-            }
-            trim(statements[0]);
-            trim(statements[1]);
-            trim(statements[2]);
-            if (statements[1].empty()) statements[1] = "1";
+        if (std::regex_search(ln, match, re)) {
+            std::string init, condition, increment, ppl;
             
-            if (statements[0].empty()) {
-                ln = ln.replace(match.position(), match.length(), "WHILE " + statements[1]);
-            } else {
-                ln = ln.replace(match.position(), match.length(), statements[0] + ";WHILE " + statements[1]);
+            init = trim_copy(match[1].str());
+            condition = trim_copy(match[2].str());
+            increment = trim_copy(match[3].str());
+            
+            if (!init.empty()) {
+                ppl.append(init + ";\n");
             }
+            ppl.append("WHILE " + (condition.empty() ? "1" : condition));
             
             openBrace.push_back(std::string(" DO\n"));
             
-            if (!statements[2].empty()) {
-                closingBrace.push_back(statements[2] + ";END;\n");
-            }
-            else {
+            if (!increment.empty()) {
+                closingBrace.push_back(increment + ";\nEND;\n");
+            } else {
                 closingBrace.push_back("END;\n");
             }
+            
+            ln = ln.replace(match.position(), match.length(), ppl);
         }
-        
     }
     
     
@@ -481,7 +534,17 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     capitalizePPLKeywords(ln);
     
     strings.restoreStrings(ln);
+    
+    ln = regex_replace(ln, std::regex(R"( *:= *)"), ":=");
+    ln = regex_replace(ln, std::regex(R"( {2})"), " ");
+    
+#ifdef DEBUG
     ln.append("\n");
+#else
+    if (ln.at(ln.length() - 1) != ';') {
+        ln.append(" ");
+    }
+#endif
 }
 
 void writeUTF16Line(const std::string& str, std::ofstream& outfile) {
@@ -535,25 +598,20 @@ void translatePrimeCToPPL(const std::string& pathname, std::ofstream& outfile)
         std::istringstream iss;
         
         if (!preprocessor.ppl && !preprocessor.python) {
+            // Pre-Parse
             trim(utf8);
             utf8 = removeWhitespaceAroundOperators(utf8);
-            re = R"( {2})";
-            utf8 = std::regex_replace(utf8, re, " ");
             
-            re = R"(\{(.+))";
-            while (std::regex_search(utf8, re)) {
-                utf8 = std::regex_replace(utf8, re, "{\n$1");
-            }
             re = R"((.+)\{)";
             utf8 = std::regex_replace(utf8, re, "$1\n{");
+            
+            re = R"(\}([^;]))";
+            utf8 = std::regex_replace(utf8, re, "}\n$1");
                      
             // Make sure all `var` or `const` are on seperate lines.
             re = R"((\S+.*)\b(const|var)\b)";
             utf8 = regex_replace(utf8, re, "$1\n$2");
  
-            // All } must also be on separate lines
-            re = R"((\S+.*)(\}$))";
-            utf8 = std::regex_replace(utf8, re, "$1\n$2");
            
             re = R"(\/\/.*$)";
             utf8 = regex_replace(utf8, re, "");
@@ -568,12 +626,16 @@ void translatePrimeCToPPL(const std::string& pathname, std::ofstream& outfile)
         
         Singleton::shared()->incrementLineNumber();
     }
-    
-    ppl = removeWhitespaceAroundOperators(ppl);
-    
-    re = R"(END;\n(ELSE))";
+
+    re = R"(\bEND;\n *(ELSE) *\n)";
     ppl = regex_replace(ppl, re, "$1");
     
+    re = R"(\n *( (?:THEN|DO)))";
+    ppl = regex_replace(ppl, re, "$1");
+    ppl = regex_replace(ppl, std::regex(R"( {2})"), " ");
+#ifndef DEBUG
+    ppl = regex_replace(ppl, std::regex(R"(;\n *)"), ";");
+#endif
     
     writeUTF16(ppl, outfile);
    
