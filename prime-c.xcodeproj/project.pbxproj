@@ -48,7 +48,6 @@
 		1384DE7C2B6D70DE0090E24D /* switch.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = switch.hpp; sourceTree = "<group>"; };
 		1389CFEA2CA73BA6008FDBEB /* timer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = timer.hpp; sourceTree = "<group>"; };
 		138F54D22C976F10009357F9 /* LICENCE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENCE.txt; sourceTree = "<group>"; };
-		138F54DD2C9E12EF009357F9 /* for_next.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = for_next.hpp; sourceTree = "<group>"; };
 		139634CB2B9A2DEA005B80F0 /* bitwise.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bitwise.cpp; sourceTree = "<group>"; };
 		139634CC2B9A2DEA005B80F0 /* bitwise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bitwise.hpp; sourceTree = "<group>"; };
 		13B13C2F2B66C2F000F9BCBB /* strings.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = strings.cpp; sourceTree = "<group>"; };
@@ -139,7 +138,6 @@
 				13B13C302B66C2F000F9BCBB /* strings.hpp */,
 				1384DE7C2B6D70DE0090E24D /* switch.hpp */,
 				139634CC2B9A2DEA005B80F0 /* bitwise.hpp */,
-				138F54DD2C9E12EF009357F9 /* for_next.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
