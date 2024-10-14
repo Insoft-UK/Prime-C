@@ -1,5 +1,11 @@
 //#define MY_DEFINE "Copyright (c) 2023 Insoft. All rights reserved."
 
+void lists(void) {
+    var a = array(5);
+    a = {1,3,4,5};
+    a[ 0 ][ 1 ];
+}
+
 enum MyEnum  {
     Red = 0,
     Blue = 1

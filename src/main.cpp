@@ -407,6 +407,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(([^:=]|^)(?:=)(?!=))";
     ln = std::regex_replace(ln, re, "$1 := ");
     
+    ln = regex_replace(ln, std::regex(R"(\[([^\[\]]+)\])"), "[($1)+1]");
     
     re = R"(\]\[)";
     ln = std::regex_replace(ln, re, ",");
@@ -605,8 +606,17 @@ void translatePrimeCToPPL(const std::string& pathname, std::ofstream& outfile)
             re = R"((.+)\{)";
             utf8 = std::regex_replace(utf8, re, "$1\n{");
             
+            re = R"(([={,]) *\n\{)";
+            utf8 = std::regex_replace(utf8, re, "$1{");
+            
             re = R"(\}([^;]))";
             utf8 = std::regex_replace(utf8, re, "}\n$1");
+            
+            re = R"(([},\d")]) *\n\})";
+            utf8 = std::regex_replace(utf8, re, "$1}");
+            
+            re = R"( *\n,)";
+            utf8 = std::regex_replace(utf8, re, ",");
                      
             // Make sure all `var` or `const` are on seperate lines.
             re = R"((\S+.*)\b(const|var)\b)";
@@ -626,6 +636,7 @@ void translatePrimeCToPPL(const std::string& pathname, std::ofstream& outfile)
         
         Singleton::shared()->incrementLineNumber();
     }
+    
 
     re = R"(\bEND;\n *(ELSE) *\n)";
     ppl = regex_replace(ppl, re, "$1");
