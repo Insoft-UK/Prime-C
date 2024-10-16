@@ -22,22 +22,19 @@
  SOFTWARE.
  */
 
+#ifndef RGB_P_hpp
+#define RGB_P_hpp
 
-#ifndef Calc_hpp
-#define Calc_hpp
+#include "graphics.h"
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
+/**
+ @brief    Returns a color in ARGB 8888 format from a given RGB[0-255] value, alpha channel runs from 0(opaque) to 255(transparent)
+ @param    r  Red channel
+ @param    g  Green channel
+ @param    b  Blue channel
+ */
+color_t RGB(uint8_t red, uint8_t blue, uint8_t green, uint8_t alpha = 0);
 
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
-}
+    
 
-#endif /* Calc_hpp */
+#endif /* PIXON_P_hpp */

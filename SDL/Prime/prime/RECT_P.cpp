@@ -22,22 +22,12 @@
  SOFTWARE.
  */
 
+#include "graphics.h"
 
-#ifndef Calc_hpp
-#define Calc_hpp
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
-
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
+void RECT_P(void* Gx, int x1, int y1, int x2, int y2, color_t edgeColor, color_t fillColor) {
+    fillRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(fillColor));
 }
 
-#endif /* Calc_hpp */
+void RECT_P(void* Gx, int x1, int y1, int x2, int y2, color_t color) {
+    fillRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(color));
+}

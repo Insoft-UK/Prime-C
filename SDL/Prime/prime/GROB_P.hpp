@@ -22,22 +22,22 @@
  SOFTWARE.
  */
 
+#ifndef GROB_P_hpp
+#define GROB_P_hpp
 
-#ifndef Calc_hpp
-#define Calc_hpp
+#include "graphics.h"
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
+#define G0 displayRAM()
 
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
-}
+extern void* G1;
+extern void* G2;
+extern void* G3;
+extern void* G4;
+extern void* G5;
+extern void* G6;
+extern void* G7;
+extern void* G8;
+extern void* G9;
+    
 
-#endif /* Calc_hpp */
+#endif /* GROB_P_hpp */

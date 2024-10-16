@@ -22,22 +22,9 @@
  SOFTWARE.
  */
 
+#include "graphics.h"
 
-#ifndef Calc_hpp
-#define Calc_hpp
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
-
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
+color_t RGB(uint8_t red, uint8_t blue, uint8_t green, uint8_t alpha = 0) {
+    color_t color = rgb(red, green, blue) | (color_t)alpha << 24;
+    return color;
 }
-
-#endif /* Calc_hpp */

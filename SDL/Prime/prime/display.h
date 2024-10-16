@@ -22,22 +22,26 @@
  SOFTWARE.
  */
 
+#ifndef _display_h
+#define _display_h
 
-#ifndef Calc_hpp
-#define Calc_hpp
+#define LCD_WIDTH_PX 320
+#define LCD_HEIGHT_PX 240
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
 #include <stdint.h>
 
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
-}
+typedef uint32_t color_t;
 
-#endif /* Calc_hpp */
+/* Set up for C function definitions, even when using C++ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
+    void *displayRAM(void);
+    
+    /* Ends C function definitions when using C++ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _display_h */

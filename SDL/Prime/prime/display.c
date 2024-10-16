@@ -22,22 +22,14 @@
  SOFTWARE.
  */
 
+#include "display.h"
 
-#ifndef Calc_hpp
-#define Calc_hpp
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
 #include <stdint.h>
 
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
+static uint32_t _DRAM[LCD_WIDTH_PX * LCD_HEIGHT_PX];
+
+
+void *displayRAM(void) {
+    return (void *)_DRAM;
 }
 
-#endif /* Calc_hpp */

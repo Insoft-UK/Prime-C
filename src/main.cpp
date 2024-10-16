@@ -1,7 +1,7 @@
 /*
  The MIT License (MIT)
  
- Copyright (c) 2023 Insoft. All rights reserved.
+ Copyright (c) 2024 Insoft. All rights reserved.
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -398,6 +398,12 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"( *\bvoid\b *)";
     ln = std::regex_replace(ln, re, "");
     
+    re = R"(\b(unsigned +)?(long|short|int|char)\b)";
+    ln = std::regex_replace(ln, re, "var");
+    
+    re = R"(\( *G0 *,)";
+    ln = std::regex_replace(ln, re, "");
+
     Alias::parse(ln);
     ln = singleton->aliases.resolveAllAliasesInText(ln);
     

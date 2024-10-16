@@ -22,22 +22,27 @@
  SOFTWARE.
  */
 
+#ifndef PIXON_P_hpp
+#define PIXON_P_hpp
 
-#ifndef Calc_hpp
-#define Calc_hpp
+#include "graphics.h"
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
+/**
+ @brief    Plots a single pixel at the specified (x, y) coordinates.
+ @param    Gx Specifies the GROB.
+ @param    x   Specifies the x coordinate of the pixel.
+ @param    y   Specifies the y coordinate of the pixel.
+ @param    color  Specifies the color of the pixel. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
+ */
+void PIXON_P(void* Gx, int x, int y, color_t color = 0);
 
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
-}
+/**
+ @brief    Plots a single pixel at the specified (x, y) coordinates.
+ @param    x   Specifies the x coordinate of the pixel.
+ @param    y   Specifies the y coordinate of the pixel.
+ @param    color  Specifies the color of the pixel. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
+ */
+void PIXON_P(int x, int y, color_t color = 0);
+    
 
-#endif /* Calc_hpp */
+#endif /* PIXON_P_hpp */

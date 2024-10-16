@@ -22,22 +22,20 @@
  SOFTWARE.
  */
 
+#ifdef __clang__
+#include "prime.hpp"
+#endif
 
-#ifndef Calc_hpp
-#define Calc_hpp
+void START(void) {
+    int x = 10;
+    RECT_P(G0, 0, 0, 319, 240, RGB(0, 0, 63, 0));
+    PIXON_P(G0, x, (int)10, RGB(255,0,0));
+    PIXON_P(G0, x, (int)11, RGB(0,255,0));
+    PIXON_P(G0, 20, 100, RGB(0,0,255));
+    
+    while (1) {
+        
+    }
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
-
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
+    return;
 }
-
-#endif /* Calc_hpp */

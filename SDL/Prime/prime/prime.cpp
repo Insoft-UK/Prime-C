@@ -22,22 +22,8 @@
  SOFTWARE.
  */
 
+#include "prime.hpp"
 
-#ifndef Calc_hpp
-#define Calc_hpp
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
 
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
-}
 
-#endif /* Calc_hpp */

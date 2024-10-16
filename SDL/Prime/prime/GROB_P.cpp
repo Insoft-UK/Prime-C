@@ -22,22 +22,13 @@
  SOFTWARE.
  */
 
+void* G1 = 0;
+void* G2 = 0;
+void* G3 = 0;
+void* G4 = 0;
+void* G5 = 0;
+void* G6 = 0;
+void* G7 = 0;
+void* G8 = 0;
+void* G9 = 0;
 
-#ifndef Calc_hpp
-#define Calc_hpp
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
-
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
-}
-
-#endif /* Calc_hpp */

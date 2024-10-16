@@ -22,22 +22,17 @@
  SOFTWARE.
  */
 
+#include "graphics.h"
+#include "GROB_P.hpp"
 
-#ifndef Calc_hpp
-#define Calc_hpp
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
-
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
+void PIXON_P(void* Gx, int x, int y, color_t color = 0) {
+    setDRAM(Gx);
+    color = invertAlphaChannel(color);
+    plot(x, y, color);
 }
 
-#endif /* Calc_hpp */
+void PIXON_P(int x, int y, color_t color = 0) {
+    setDRAM(G0);
+    color = invertAlphaChannel(color);
+    plot(x, y, color);
+}

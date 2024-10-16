@@ -22,22 +22,12 @@
  SOFTWARE.
  */
 
+#ifndef prime_hpp
+#define prime_hpp
 
-#ifndef Calc_hpp
-#define Calc_hpp
+#include "GROB_P.hpp"
+#include "RECT_P.hpp"
+#include "PIXON_P.hpp"
+#include "RGB.hpp"
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <deque>
-#include <stdint.h>
-
-namespace pp {
-    class Calc {
-    public:
-        static bool parse(std::string& str);
-    };
-}
-
-#endif /* Calc_hpp */
+#endif /* prime_hpp */
