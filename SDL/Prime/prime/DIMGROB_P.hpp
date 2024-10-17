@@ -22,9 +22,15 @@
  SOFTWARE.
  */
 
-#include "RGB.hpp"
+#ifndef DIMGROB_P_hpp
+#define DIMGROB_P_hpp
 
-color_t RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha) {
-    color_t color = rgb(r, g, b) | (color_t)alpha << 24;
-    return color;
-}
+#include "graphics.h"
+#include "GROB.hpp"
+#include "list.hpp"
+
+
+void DIMGROB_P(GROB& Gx, int width, int height, color_t color = 0xFFFFFF);
+void DIMGROB_P(GROB& Gx, int width, int height, UList64& list);
+
+#endif /* DIMGROB_P_hpp */

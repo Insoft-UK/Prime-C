@@ -22,9 +22,15 @@
  SOFTWARE.
  */
 
-#include "RGB.hpp"
+#ifndef list_hpp
+#define list_hpp
 
-color_t RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha) {
-    color_t color = rgb(r, g, b) | (color_t)alpha << 24;
-    return color;
-}
+#include <vector>
+
+typedef std::vector<int32_t> List32;
+typedef std::vector<uint32_t> UList32;
+typedef std::vector<int64_t> List64;
+typedef std::vector<uint64_t> UList64;
+typedef std::vector<float> List;
+
+#endif /* list_hpp */

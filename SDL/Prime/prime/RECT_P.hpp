@@ -26,27 +26,40 @@
 #define RECT_P_hpp
 
 #include "graphics.h"
+#include "GROB.hpp"
 
 /**
+ The Alpha Channel  0 (opaque) to 255 (transparent).
+ 
  @brief    Draw a rectangle with no fill color
  @param    x1   Top left corner x coordinate
  @param    y1   Top left corner y coordinate
  @param    x2   Width in pixels
  @param    y2   Height in pixels
- @param    edgeColor Specifies what edge color to draw with. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
- @param    fillColor Specifies what fill color to draw with. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
+ @param    edgeColor Specifies what edge color to draw with. It is in ARGB 8888 format.
+ @param    fillColor Specifies what fill color to draw with. It is in ARGB 8888 format.
  */
-void RECT_P(void* Gx, int x1, int y1, int x2, int y2, color_t edgeColor, color_t fillColor);
+void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t edgeColor, color_t fillColor);
 
 /**
+ The Alpha Channel  0 (opaque) to 255 (transparent).
+ 
  @brief    Draw a rectangle with no fill color
  @param    x1   Top left corner x coordinate
  @param    y1   Top left corner y coordinate
  @param    x2   Width in pixels
  @param    y2   Height in pixels
- @param    color Specifies what fill color to draw with. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
+ @param    color Specifies what fill color to draw with. It is in ARGB 8888 format.
  */
-void RECT_P(void* Gx, int x1, int y1, int x2, int y2, color_t color);
+void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t color = 0xFFFFFF);
     
+/**
+ The Alpha Channel  0 (opaque) to 255 (transparent).
+ 
+ @brief    Draw a rectangle with no fill color
+ @param    Gx GROB
+ @param    color Specifies what fill color to draw with. It is in ARGB 8888 format.
+ */
+void RECT_P(GROB& Gx, color_t color = 0xFFFFFF);
 
 #endif /* RECT_P_hpp */

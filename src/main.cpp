@@ -394,6 +394,12 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     ln = expandAssignment(ln);
     Bitwise::parse(ln);
     
+    re = R"(0x([\dA-F]+))";
+    
+//    if (std::regex_search(ln, match, re)) {
+        ln = std::regex_replace(ln, re, "#$1:h64");
+//    }
+    
     
     re = R"( *\bvoid\b *)";
     ln = std::regex_replace(ln, re, "");
@@ -401,8 +407,13 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\b(unsigned +)?(long|short|int|char)\b)";
     ln = std::regex_replace(ln, re, "var");
     
+    re = R"(\bU?List(64|32) *)";
+    ln = std::regex_replace(ln, re, "var ");
+    
+    
+    
     re = R"(\( *G0 *,)";
-    ln = std::regex_replace(ln, re, "");
+    ln = std::regex_replace(ln, re, "(");
 
     Alias::parse(ln);
     ln = singleton->aliases.resolveAllAliasesInText(ln);
@@ -811,6 +822,10 @@ int main(int argc, char **argv) {
     str = "#define __primec";
     preprocessor.parse(str);
     str = "#define __SCREEN G0";
+    preprocessor.parse(str);
+    str = "#define __SCREEN_WIDTH 320";
+    preprocessor.parse(str);
+    str = "#define __SCREEN_HEIGHT 240";
     preprocessor.parse(str);
     str = R"(#define __LIST_LIMIT 10000)";
     preprocessor.parse(str);

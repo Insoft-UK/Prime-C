@@ -22,13 +22,16 @@
  SOFTWARE.
  */
 
-void* G1 = 0;
-void* G2 = 0;
-void* G3 = 0;
-void* G4 = 0;
-void* G5 = 0;
-void* G6 = 0;
-void* G7 = 0;
-void* G8 = 0;
-void* G9 = 0;
+#ifndef GROB_hpp
+#define GROB_hpp
 
+typedef struct {
+    unsigned width;
+    unsigned height;
+    void* bytes;
+} GROB;
+
+
+extern GROB G0, G1, G2, G3, G4, G5, G6, G7, G8, G9;
+
+#endif /* GROB_hpp */

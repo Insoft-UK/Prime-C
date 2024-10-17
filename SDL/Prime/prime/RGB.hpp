@@ -32,8 +32,9 @@
  @param    r  Red channel
  @param    g  Green channel
  @param    b  Blue channel
+ @param    a  Alpha channel (optional)
  */
-color_t RGB(uint8_t red, uint8_t blue, uint8_t green, uint8_t alpha = 0);
+color_t RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0);
 
     
 

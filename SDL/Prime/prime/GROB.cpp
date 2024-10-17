@@ -22,9 +22,8 @@
  SOFTWARE.
  */
 
-#include "RGB.hpp"
+#include "GROB.hpp"
+#include "graphics.h"
 
-color_t RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha) {
-    color_t color = rgb(r, g, b) | (color_t)alpha << 24;
-    return color;
-}
+GROB G0 = {.width = LCD_WIDTH_PX, .height = LCD_HEIGHT_PX, .bytes = displayRAM()};
+GROB G1, G2, G3, G4, G5, G6, G7, G8, G9 = {};

@@ -27,11 +27,26 @@
 #endif
 
 void START(void) {
+    
+ 
+    
+    UList64 l = {0x00FFFFFF00FFFFFF,0x00FFFFFF00FFFFFF,0x00FFFFFF00FFFFFF,0x00FFFFFF00FFFFFF};
     int x = 10;
+    
+    DIMGROB_P(G2, 2, 2, l);
+    
     RECT_P(G0, 0, 0, 319, 240, RGB(0, 0, 63, 0));
-    PIXON_P(G0, x, (int)10, RGB(255,0,0));
-    PIXON_P(G0, x, (int)11, RGB(0,255,0));
+    PIXON_P(G0, x, 10, RGB(255,0,0));
+    PIXON_P(G0, x, 11, RGB(0,255,0));
     PIXON_P(G0, 20, 100, RGB(0,0,255));
+    
+    DIMGROB_P(G1, 20, 40, RGB(255, 128, 0));
+    
+    
+    int i;
+    for (i = 0; i < __SCREEN_WIDTH * __SCREEN_HEIGHT; i++) {
+//        PIXON_P(G0, i % __SCREEN_WIDTH, i / __SCREEN_WIDTH, i);
+    }
     
     while (1) {
         

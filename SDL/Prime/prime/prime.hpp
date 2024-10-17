@@ -25,9 +25,21 @@
 #ifndef prime_hpp
 #define prime_hpp
 
-#include "GROB_P.hpp"
+#ifndef __primec
+
+
+#define __SCREEN G0
+#define __SCREEN_WIDTH 320
+#define __SCREEN_HEIGHT 240
+
+#include "list.hpp"
+#include "GROB.hpp"
+
+#include "RGB.hpp"
 #include "RECT_P.hpp"
 #include "PIXON_P.hpp"
-#include "RGB.hpp"
+#include "DIMGROB_P.hpp"
+
+#endif
 
 #endif /* prime_hpp */

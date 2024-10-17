@@ -22,22 +22,4 @@
  SOFTWARE.
  */
 
-#ifndef GROB_P_hpp
-#define GROB_P_hpp
-
-#include "graphics.h"
-
-#define G0 displayRAM()
-
-extern void* G1;
-extern void* G2;
-extern void* G3;
-extern void* G4;
-extern void* G5;
-extern void* G6;
-extern void* G7;
-extern void* G8;
-extern void* G9;
-    
-
-#endif /* GROB_P_hpp */
+#include "list.hpp"

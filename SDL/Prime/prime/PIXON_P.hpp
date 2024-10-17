@@ -26,6 +26,7 @@
 #define PIXON_P_hpp
 
 #include "graphics.h"
+#include "GROB.hpp"
 
 /**
  @brief    Plots a single pixel at the specified (x, y) coordinates.
@@ -34,7 +35,7 @@
  @param    y   Specifies the y coordinate of the pixel.
  @param    color  Specifies the color of the pixel. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
  */
-void PIXON_P(void* Gx, int x, int y, color_t color = 0);
+void PIXON_P(GROB& Gx, int x, int y, color_t color = 0);
 
 /**
  @brief    Plots a single pixel at the specified (x, y) coordinates.

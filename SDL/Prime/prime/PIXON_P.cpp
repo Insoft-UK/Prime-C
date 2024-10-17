@@ -22,17 +22,16 @@
  SOFTWARE.
  */
 
-#include "graphics.h"
-#include "GROB_P.hpp"
+#include "PIXON_P.hpp"
 
-void PIXON_P(void* Gx, int x, int y, color_t color = 0) {
-    setDRAM(Gx);
+void PIXON_P(GROB& Gx, int x, int y, color_t color) {
+    setDRAM(Gx.bytes);
     color = invertAlphaChannel(color);
     plot(x, y, color);
 }
 
-void PIXON_P(int x, int y, color_t color = 0) {
-    setDRAM(G0);
+void PIXON_P(int x, int y, color_t color) {
+    setDRAM(G0.bytes);
     color = invertAlphaChannel(color);
     plot(x, y, color);
 }

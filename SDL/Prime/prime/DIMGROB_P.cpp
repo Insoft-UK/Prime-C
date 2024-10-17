@@ -22,9 +22,41 @@
  SOFTWARE.
  */
 
-#include "RGB.hpp"
+#include "DIMGROB_P.hpp"
+#include <iostream>
 
-color_t RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha) {
-    color_t color = rgb(r, g, b) | (color_t)alpha << 24;
-    return color;
+void DIMGROB_P(GROB& Gx, int width, int height, color_t color) {
+    if (Gx.bytes != nullptr) {
+        free(Gx.bytes);
+        Gx = {};
+    }
+    
+    if (width <= 0 && height <= 0) return;
+    Gx.bytes = malloc(width * height * 4);
+    if (Gx.bytes== nullptr) return;
+    
+    Gx.width = width;
+    Gx.height = height;
+    setDRAM(Gx.bytes);
+    fillArea(0, 0, width, height, color);
+
+}
+
+
+void DIMGROB_P(GROB& Gx, int width, int height, UList64& list) {
+    if (Gx.bytes != nullptr) {
+        free(Gx.bytes);
+        Gx = {};
+    }
+    
+    if (list.size() == 0) return;
+    
+    if (width <= 0 && height <= 0) return;
+    Gx.bytes = malloc(width * height * 4);
+    if (Gx.bytes== nullptr) return;
+    
+    Gx.width = width;
+    Gx.height = height;
+    memcpy(Gx.bytes, list.data(), width * height * 4);
+
 }
