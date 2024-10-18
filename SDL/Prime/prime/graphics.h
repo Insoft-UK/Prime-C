@@ -40,6 +40,17 @@ extern "C" {
     void setDRAM(void* address);
     
     /**
+     Based on Alpha, Red, Green and Blue components values (0 to 31)
+     The Alpha Channel  1 (opaque) to 0 (transparent).
+     
+     @brief    Returns 32-bit TrueColor ARGB.
+     @param    color Specifies the color will be converted. It is in ARGB 1555  format.
+     @returns  An 32-bit unsigned integer number that can be used as
+               the color parameter for a drawing function.
+     */
+    color_t convertHighColorToTrueColor(uint16_t color);
+    
+    /**
     @brief    Inverts the alpha channel of a given color in ARGB 8888 format.
     @param    argb Specifies the color in ARGB 8888 format, where the alpha channel ranges from 0 (fully transparent) to 255 (fully opaque).
     @return   A new color in ARGB 8888 format with the alpha channel inverted (i.e., 0 becomes 255 and 255 becomes 0).
@@ -149,6 +160,8 @@ extern "C" {
     @param    color  Specifies the color of the pixel. It is in ARGB 8888 format.
     */
     void plot(unsigned x, unsigned y, color_t color);
+    
+    void drawBitmapScaled(int dx, int dy, int width, int height, float scale_x, float scale_y, const void* data);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

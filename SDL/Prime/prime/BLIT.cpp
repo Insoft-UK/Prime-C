@@ -22,20 +22,20 @@
  SOFTWARE.
  */
 
-#include "RECT_P.hpp"
+#include "BLIT.hpp"
 
-void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t edgeColor, color_t fillColor) {
-    setDRAM(Gx.bytes);
-    fillRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(fillColor));
-    drawRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(edgeColor));
+void BLIT_P(GROB& trgtGx, int dx, int dy, int dw, int dh, GROB& srcGx, int sx, int sy, int sw, int sh, uint8_t alpha) {
+    float scale_x = (float)(dw) / (float)sw;
+    float scale_y = (float)(dh) / (float)sh;
+    
+    setDRAM(trgtGx.bytes);
+    drawBitmapScaled(dx, dy, sw, sh, scale_x, scale_y, srcGx.bytes);
 }
 
-void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t color) {
-    setDRAM(Gx.bytes);
-    fillRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(color));
-}
-
-void RECT_P(GROB& Gx, color_t color) {
-    setDRAM(Gx.bytes);
-    fillRect(0, 0, LCD_WIDTH_PX, LCD_HEIGHT_PX, invertAlphaChannel(color));
+void BLIT_P(GROB& trgtGx, int dx, int dy, int dw, int dh, GROB& srcGx, uint8_t alpha) {
+    float scale_x = (float)(dw) / (float)srcGx.width;
+    float scale_y = (float)(dh) / (float)srcGx.height;
+    
+    setDRAM(trgtGx.bytes);
+    drawBitmapScaled(dx, dy, srcGx.width, srcGx.height, scale_x, scale_y, srcGx.bytes);
 }

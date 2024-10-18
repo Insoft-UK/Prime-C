@@ -27,10 +27,9 @@
 
 #include <vector>
 
-typedef std::vector<int32_t> List32;
-typedef std::vector<uint32_t> UList32;
-typedef std::vector<int64_t> List64;
-typedef std::vector<uint64_t> UList64;
-typedef std::vector<float> List;
+#define BLOB(blob,n) blob.at(n)
+
+typedef std::vector<uint64_t> blob;
+typedef std::vector<float> list;
 
 #endif /* list_hpp */

@@ -22,8 +22,8 @@
  SOFTWARE.
  */
 
-#ifndef RECT_P_hpp
-#define RECT_P_hpp
+#ifndef RECT_hpp
+#define RECT_hpp
 
 #include "graphics.h"
 #include "GROB.hpp"
@@ -62,4 +62,4 @@ void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t color = 0xFFFFFF);
  */
 void RECT_P(GROB& Gx, color_t color = 0xFFFFFF);
 
-#endif /* RECT_P_hpp */
+#endif /* RECT_hpp */

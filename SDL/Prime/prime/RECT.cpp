@@ -22,41 +22,20 @@
  SOFTWARE.
  */
 
-#include "DIMGROB_P.hpp"
-#include <iostream>
+#include "RECT.hpp"
 
-void DIMGROB_P(GROB& Gx, int width, int height, color_t color) {
-    if (Gx.bytes != nullptr) {
-        free(Gx.bytes);
-        Gx = {};
-    }
-    
-    if (width <= 0 && height <= 0) return;
-    Gx.bytes = malloc(width * height * 4);
-    if (Gx.bytes== nullptr) return;
-    
-    Gx.width = width;
-    Gx.height = height;
+void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t edgeColor, color_t fillColor) {
     setDRAM(Gx.bytes);
-    fillArea(0, 0, width, height, color);
-
+    fillRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(fillColor));
+    drawRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(edgeColor));
 }
 
+void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t color) {
+    setDRAM(Gx.bytes);
+    fillRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(color));
+}
 
-void DIMGROB_P(GROB& Gx, int width, int height, UList64& list) {
-    if (Gx.bytes != nullptr) {
-        free(Gx.bytes);
-        Gx = {};
-    }
-    
-    if (list.size() == 0) return;
-    
-    if (width <= 0 && height <= 0) return;
-    Gx.bytes = malloc(width * height * 4);
-    if (Gx.bytes== nullptr) return;
-    
-    Gx.width = width;
-    Gx.height = height;
-    memcpy(Gx.bytes, list.data(), width * height * 4);
-
+void RECT_P(GROB& Gx, color_t color) {
+    setDRAM(Gx.bytes);
+    fillRect(0, 0, LCD_WIDTH_PX, LCD_HEIGHT_PX, invertAlphaChannel(color));
 }

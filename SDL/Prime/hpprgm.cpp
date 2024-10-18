@@ -27,21 +27,25 @@
 #endif
 
 void START(void) {
+
+    blob l = {0x7C0003E0001F7FE0,0x007F7FE003E07C00,0x7FFF00007FFF0000,0x00007FFF00007FFF};
+  
     
- 
-    
-    UList64 l = {0x00FFFFFF00FFFFFF,0x00FFFFFF00FFFFFF,0x00FFFFFF00FFFFFF,0x00FFFFFF00FFFFFF};
-    int x = 10;
-    
-    DIMGROB_P(G2, 2, 2, l);
+    DIMGROB_P(G2, 4, 4, l);
     
     RECT_P(G0, 0, 0, 319, 240, RGB(0, 0, 63, 0));
-    PIXON_P(G0, x, 10, RGB(255,0,0));
-    PIXON_P(G0, x, 11, RGB(0,255,0));
-    PIXON_P(G0, 20, 100, RGB(0,0,255));
+    
+    blob t = {0x00FF00000000FF00,0x000000FF00FFFF00};
+    
+//    t.at(0) = 0;
+    
+    DIMGROB_P(G3, 4, 1, t);
     
     DIMGROB_P(G1, 20, 40, RGB(255, 128, 0));
     
+    BLIT_P(G0, 0, 0, 128, 128, G2, 0, 0, 4, 4);
+    
+    BLIT_P(G0, 0, 0, 32, 16, G3, 0, 0, 4, 1);
     
     int i;
     for (i = 0; i < __SCREEN_WIDTH * __SCREEN_HEIGHT; i++) {

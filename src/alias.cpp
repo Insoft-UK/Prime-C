@@ -57,8 +57,6 @@ static std::string base10ToBase32(unsigned int num) {
 static void parseAlias(const std::string& str, Aliases::TIdentity& identity) {
     static int v = -1;
     static int f = -1;
-
-    if (str.length() < 3)  return;
     
     identity.identifier = str;
     if (identity.type == Aliases::Type::Variable) {

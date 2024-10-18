@@ -22,15 +22,28 @@
  SOFTWARE.
  */
 
-#ifndef DIMGROB_P_hpp
-#define DIMGROB_P_hpp
+#ifndef PIXON_hpp
+#define PIXON_hpp
 
 #include "graphics.h"
 #include "GROB.hpp"
-#include "list.hpp"
 
+/**
+ @brief    Plots a single pixel at the specified (x, y) coordinates.
+ @param    Gx Specifies the GROB.
+ @param    x   Specifies the x coordinate of the pixel.
+ @param    y   Specifies the y coordinate of the pixel.
+ @param    color  Specifies the color of the pixel. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
+ */
+void PIXON_P(GROB& Gx, int x, int y, color_t color = 0);
 
-void DIMGROB_P(GROB& Gx, int width, int height, color_t color = 0xFFFFFF);
-void DIMGROB_P(GROB& Gx, int width, int height, UList64& list);
+/**
+ @brief    Plots a single pixel at the specified (x, y) coordinates.
+ @param    x   Specifies the x coordinate of the pixel.
+ @param    y   Specifies the y coordinate of the pixel.
+ @param    color  Specifies the color of the pixel. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
+ */
+void PIXON_P(int x, int y, color_t color = 0);
+    
 
-#endif /* DIMGROB_P_hpp */
+#endif /* PIXON_hpp */

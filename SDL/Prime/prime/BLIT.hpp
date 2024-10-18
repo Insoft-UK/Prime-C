@@ -22,25 +22,14 @@
  SOFTWARE.
  */
 
-#ifndef prime_hpp
-#define prime_hpp
+#ifndef BLIT_hpp
+#define BLIT_hpp
 
-#ifndef __primec
-
-
-#define __SCREEN G0
-#define __SCREEN_WIDTH 320
-#define __SCREEN_HEIGHT 240
-
-#include "list.hpp"
+#include "graphics.h"
 #include "GROB.hpp"
+#include "list.hpp"
 
-#include "RGB.hpp"
-#include "RECT.hpp"
-#include "PIXON.hpp"
-#include "DIMGROB.hpp"
-#include "BLIT.hpp"
+void BLIT_P(GROB& trgtGx, int dx, int dy, int dw, int dh, GROB& srcGx, int sx, int sy, int sw, int sh, uint8_t alpha = 255);
+void BLIT_P(GROB& trgtGx, int dx, int dy, int dw, int dh, GROB& srcGx, uint8_t alpha = 255);
 
-#endif
-
-#endif /* prime_hpp */
+#endif /* BLIT_hpp */

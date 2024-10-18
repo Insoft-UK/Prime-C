@@ -38,7 +38,6 @@ static bool isRunning = true;
 static SDL_Window *window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* texture = NULL;
-static SDL_Event event;
 
 
 extern void START(void);
@@ -56,7 +55,7 @@ int main(int argc, const char * argv[]) {
     }
     
 //    window = SDL_CreateWindow("SDL3 Project",LCD_WIDTH_PX, LCD_HEIGHT_PX, SDL_WINDOW_HIGH_PIXEL_DENSITY); // SDL3
-    window = SDL_CreateWindow("SDL3 Project", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LCD_WIDTH_PX * 2, LCD_HEIGHT_PX * 2, SDL_WINDOW_ALLOW_HIGHDPI);
+    window = SDL_CreateWindow("HPPRGM Project", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LCD_WIDTH_PX * 2, LCD_HEIGHT_PX * 2, SDL_WINDOW_ALLOW_HIGHDPI);
     if (window == nullptr) {
         std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -93,20 +92,11 @@ int main(int argc, const char * argv[]) {
     SDL_Thread* thread = SDL_CreateThread( hpprgm_thread, "HPPRGM Thread",  NULL );
     const int pitch = LCD_WIDTH_PX * sizeof(Uint32);
     
+    SDL_Event event;
+    
     while(isRunning) {
-        if (SDL_UpdateTexture(texture, NULL, displayRAM(), pitch) != 0) {
-            std::cout << "SDL_UpdateTexture failed: " << SDL_GetError() << '\n';
-        }
-        
-        if (SDL_RenderClear(renderer) != 0) {
-            std::cout << "SDL_RenderClear failed: " << SDL_GetError() << '\n';
-        }
-//        SDL_RenderTexture(renderer, texture, NULL, NULL); // SDL3
-        SDL_RenderCopy(renderer, texture, NULL, NULL); // SDL2
-        SDL_RenderPresent(renderer);
-        
-        SDL_Delay(16);
         SDL_PollEvent(&event);
+        SDL_Delay(16);
         
 // SDL3
 #define SDL_EVENT_QUIT              SDL_QUIT
@@ -131,6 +121,17 @@ int main(int argc, const char * argv[]) {
                 break;
                 
         }
+        
+        if (SDL_UpdateTexture(texture, NULL, displayRAM(), pitch) != 0) {
+            std::cout << "SDL_UpdateTexture failed: " << SDL_GetError() << '\n';
+        }
+        
+        if (SDL_RenderClear(renderer) != 0) {
+            std::cout << "SDL_RenderClear failed: " << SDL_GetError() << '\n';
+        }
+//        SDL_RenderTexture(renderer, texture, NULL, NULL); // SDL3
+        SDL_RenderCopy(renderer, texture, NULL, NULL); // SDL2
+        SDL_RenderPresent(renderer);
     }
 
     SDL_DetachThread(thread);

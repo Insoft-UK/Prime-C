@@ -22,28 +22,16 @@
  SOFTWARE.
  */
 
-#ifndef PIXON_P_hpp
-#define PIXON_P_hpp
+#include "PIXON.hpp"
 
-#include "graphics.h"
-#include "GROB.hpp"
+void PIXON_P(GROB& Gx, int x, int y, color_t color) {
+    setDRAM(Gx.bytes);
+    color = invertAlphaChannel(color);
+    plot(x, y, color);
+}
 
-/**
- @brief    Plots a single pixel at the specified (x, y) coordinates.
- @param    Gx Specifies the GROB.
- @param    x   Specifies the x coordinate of the pixel.
- @param    y   Specifies the y coordinate of the pixel.
- @param    color  Specifies the color of the pixel. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
- */
-void PIXON_P(GROB& Gx, int x, int y, color_t color = 0);
-
-/**
- @brief    Plots a single pixel at the specified (x, y) coordinates.
- @param    x   Specifies the x coordinate of the pixel.
- @param    y   Specifies the y coordinate of the pixel.
- @param    color  Specifies the color of the pixel. It is in ARGB 8888 format, alpha channel runs from 0(opaque) to 255(transparent).
- */
-void PIXON_P(int x, int y, color_t color = 0);
-    
-
-#endif /* PIXON_P_hpp */
+void PIXON_P(int x, int y, color_t color) {
+    setDRAM(G0.bytes);
+    color = invertAlphaChannel(color);
+    plot(x, y, color);
+}

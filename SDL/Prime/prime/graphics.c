@@ -24,6 +24,7 @@
 
 #include "graphics.h"
 
+
 static void* _DRAM = NULL;
 
 void setDRAM(void* address) {
@@ -34,12 +35,13 @@ void setDRAM(void* address) {
     _DRAM = address;
 }
 
-void* getDRAM(void) {
+static void* getDRAM(void) {
     if (_DRAM == NULL) {
         return displayRAM();
     }
     return _DRAM;
 }
+
 
 /**
  Based on Alpha, Red, Green and Blue components values (0 to 31)
@@ -50,11 +52,12 @@ void* getDRAM(void) {
  @returns  An 32-bit unsigned integer number that can be used as
            the color parameter for a drawing function.
  */
-static uint32_t convertHighColorToTrueColor(uint16_t color) {
-    uint32_t argb = (uint32_t)(color & 0b111110000000000) << 9 | (uint32_t)(color & 0b1111100000) << 6 | (uint32_t)(color & 0b11111) << 3;
+color_t convertHighColorToTrueColor(uint16_t color) {
+    color_t argb = (uint32_t)(color & 0b111110000000000) << 9 | (uint32_t)(color & 0b1111100000) << 6 | (uint32_t)(color & 0b11111) << 3;
     argb |= (argb & 0b000010000000100000001000) >> 3;
     argb |= (argb & 0b001000000010000000100000) >> 4;
     argb |= (argb & 0b100000001000000010000000) >> 5;
+    if (color & 0x8000) argb |= 0xFF000000;
     return argb;
 }
 
@@ -485,7 +488,7 @@ unsigned short makeGray(int shade) {
  */
 void fillArea(unsigned x, unsigned y, unsigned w, unsigned h, color_t color) {
     if (x > LCD_WIDTH_PX - 1 || y > LCD_HEIGHT_PX - 1) return;
-    color_t* DRAM = getDRAM();
+    color_t* DRAM = (color_t *)getDRAM();
     DRAM += y * LCD_WIDTH_PX + x;
     while(h--){
         unsigned w2 = w;
@@ -506,9 +509,32 @@ void plot(unsigned x, unsigned y, color_t color) {
     color_t* DRAM = NULL;
     
     if (x > LCD_WIDTH_PX - 1 || y > LCD_HEIGHT_PX - 1) return;
-    DRAM = getDRAM();
+    DRAM = (color_t *)getDRAM();
     DRAM += x + y * LCD_WIDTH_PX;
     *DRAM = alphaBlend(color, *DRAM);
+}
+
+
+void drawBitmapScaled(int dx, int dy, int width, int height, float scale_x, float scale_y, const void *data) {
+    uint32_t *bitmap = (uint32_t*)data;
+    
+    // Iterate through the bitmap and draw it scaled
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            // Access pixel color data from the bitmap array
+            color_t color = bitmap[y * width + x];
+            
+            // Draw the pixel at the scaled position
+            for (float sy = 0; sy < scale_y; sy += 1.0f) {
+                for (float sx = 0; sx < scale_x; sx += 1.0f) {
+                    // Calculate the scaled position
+                    int posX = (int)(x * scale_x + sx);
+                    int posY = (int)(y * scale_y + sy);
+                    plot(posX + dx, posY + dy, invertAlphaChannel(color));
+                }
+            }
+        }
+    }
 }
 
 

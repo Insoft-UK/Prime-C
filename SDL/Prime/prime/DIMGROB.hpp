@@ -22,16 +22,15 @@
  SOFTWARE.
  */
 
-#include "PIXON_P.hpp"
+#ifndef DIMGROB_hpp
+#define DIMGROB_hpp
 
-void PIXON_P(GROB& Gx, int x, int y, color_t color) {
-    setDRAM(Gx.bytes);
-    color = invertAlphaChannel(color);
-    plot(x, y, color);
-}
+#include "graphics.h"
+#include "GROB.hpp"
+#include "list.hpp"
 
-void PIXON_P(int x, int y, color_t color) {
-    setDRAM(G0.bytes);
-    color = invertAlphaChannel(color);
-    plot(x, y, color);
-}
+
+void DIMGROB_P(GROB& Gx, int width, int height, color_t color = 0xFFFFFF);
+void DIMGROB_P(GROB& Gx, int width, int height, blob& list);
+
+#endif /* DIMGROB_hpp */

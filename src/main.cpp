@@ -395,22 +395,27 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     Bitwise::parse(ln);
     
     re = R"(0x([\dA-F]+))";
+    ln = std::regex_replace(ln, re, "#$1:64h");
     
-//    if (std::regex_search(ln, match, re)) {
-        ln = std::regex_replace(ln, re, "#$1:h64");
-//    }
+    re = R"(0b([01]+))";
+    ln = std::regex_replace(ln, re, "#$1:64b");
+  
     
-    
-    re = R"( *\bvoid\b *)";
+    re = R"( *\b(void|unsigned)\b *)";
     ln = std::regex_replace(ln, re, "");
     
-    re = R"(\b(unsigned +)?(long|short|int|char)\b)";
+    re = R"(\bconst +(long|short|int|char|float|double)\b)";
+    ln = std::regex_replace(ln, re, "const");
+    
+    re = R"(\b(long|short|int|char|float|double)\b)";
     ln = std::regex_replace(ln, re, "var");
     
-    re = R"(\bU?List(64|32) *)";
-    ln = std::regex_replace(ln, re, "var ");
+    re = R"(\b(blob|list)\b)";
+    ln = std::regex_replace(ln, re, "var");
     
     
+    re = R"(\b([a-zA-Z_]\w*)\.at\((\d+)\))";
+    ln = std::regex_replace(ln, re, "$1[$2]");
     
     re = R"(\( *G0 *,)";
     ln = std::regex_replace(ln, re, "(");
