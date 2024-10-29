@@ -370,17 +370,13 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(0b([01]+))";
     ln = std::regex_replace(ln, re, "#$1:64b");
     
-    
-    re = R"(\b([a-zA-Z_]\w*)\.AT\((.+)\))";
-    ln = std::regex_replace(ln, re, "$1[$2]");
-    
     re = R"(\( *G0 *,)";
     ln = std::regex_replace(ln, re, "(");
     
     re = R"((SUB|FUNCTION) +)";
     ln = std::regex_replace(ln, re, "");
     
-    re = R"((BLOB|LIST|DATA))";
+    re = R"((BLOB|LIST|DATA|INTEGER))";
     ln = std::regex_replace(ln, re, "LOCAL");
     
     re = R"(END(CASE)?)";

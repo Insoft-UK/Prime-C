@@ -55,16 +55,28 @@
 #define DEFAULT
 #define CASE     for (;;) {
 #define ENDCASE  break; }
-#define AT       at
-#define SIZE     size()
+
+#define INTEGER  int64_t
+#define IP(n)    ((int64_t)n)
 
 #define DELAY SDL_Delay(16)
-#define BITSHR(a,n) (a>>n)
-#define BITSHL(a,n) ((long long)a<<n)
+
+#define NOT         !
+#define AND         &&
+#define OR          ||
+
+#define BITAND(a,b) ((int64_t)a&(int64_t)b)
+#define BITNOT(a)   (~(int64_t)a)
+#define BITOR(a,b)  ((int64_t)a|(int64_t)b)
+#define BITSL(a,n)  ((int64_t)a<<(int64_t)n)
+#define BITSR(a,n)  ((int64_t)a>>(int64_t)n)
+#define BITXOR(a,b) ((int64_t)a^(int64_t)b)
 
 typedef std::vector<uint64_t> BLOB;
 typedef std::vector<int64_t> DATA;
 typedef std::vector<float> LIST;
+
+#define SIZE(obj)   obj.size()
 
 #include "GROB.hpp"
 

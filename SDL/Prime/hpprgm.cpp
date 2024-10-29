@@ -29,21 +29,24 @@ SUB START()
 BEGIN
     
     BLOB l = {0x7C0003E0001F7FE0,0x007F7FE003E07C00,0x7FFF00007FFF0000,0x00007FFF00007FFF};
-  
-   
-    
+
     
     DIMGROB_P(G2, 4, 4, l);
     
     RECT_P(G0, 0, 0, 319, 240, RGB(0, 0, 63, 0));
-    
-    BLOB b = {0,0,0,0};
-    LOCAL n;
-    FOR (n = 0; n < b.SIZE; n+=1) DO
-        BITSHL(RGB,32);
-        b.AT(n) = 0;
+
+    BLOB blob = {0,0,0,0};
+    INTEGER n, c;
+    FOR (n = 0; n < SIZE(blob); n+=1) DO
+        INTEGER r = 0, g = 0, b = 0;
+        b = BITAND(n, 1) * 255;
+        g = BITAND(BITSR(n,1), 1) * 255;
+        r = BITAND(BITSR(n,2), 1) * 255;
+        c = RGB(r, g, b);
+        c = BITOR(BITSL(c,32), c);
+        blob[n] = c;
     END
-    DIMGROB_P(G3, 8, 1, b);
+    DIMGROB_P(G3, 2, 2, blob);
 
     DIMGROB_P(G1, 20, 40, RGB(255, 128, 0));
     BLIT_P(G0, 0, 0, 128, 128, G2, 0, 0, 4, 4);
