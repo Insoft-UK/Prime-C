@@ -1,7 +1,7 @@
 <img src="https://raw.githubusercontent.com/Insoft-UK/Prime-C/main/assets/Prime-C_Logo.svg" style="width: 128px" />
-Prime-C is a Compiler for a C-like language that compiles code into PPL (Prime Programming Language) for the HP Prime calculator.
+Prime-C is a compiler for a hybrid PPL + C-like language that translates code into pure PPL (Prime Programming Language) for the HP Prime calculator.
 
-This project is experimental and will see significant changes as development progresses. The aim is to investigate whether it's feasible to create a C-like language that allows code to be written in this form of a slimed down version of C, with the ability to compile it into PPL (Prime Programming Language) for the HP Prime calculator, while also enabling the same codebase to compile for macOS.
+This experimental project is expected to evolve significantly as development progresses. Its goal is to explore the feasibility of creating a hybrid PPL + C-like language, enabling code to be written in this unified language. The language is designed to compile into pure PPL for the HP Prime calculator while also supporting macOS compilation from the same codebase.
 
 >[!WARNING]
 Experimental, not to be used for actual software development.
