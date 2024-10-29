@@ -25,14 +25,47 @@
 #ifndef prime_hpp
 #define prime_hpp
 
-#ifndef __primec
+#ifdef __clang__
 
+#include <vector>
+#include <SDL2/SDL.h>
 
 #define __SCREEN G0
 #define __SCREEN_WIDTH 320
 #define __SCREEN_HEIGHT 240
 
-#include "list.hpp"
+#define BEGIN    {
+#define END      }
+
+#define DO       {
+#define THEN     {
+#define REPEAT   do {
+#define IF       if
+#define FOR      for
+#define WHILE(condition) while (condition)
+#define UNTIL(condition) } while (!(condition))
+#define LOCAL    float
+#define CONST    const float
+#define ELSE     } else {
+#define FUNCTION float
+#define SUB      void
+#define RETURN   return
+#define CONTINUE continue
+#define BREAK    break
+#define DEFAULT
+#define CASE     for (;;) {
+#define ENDCASE  break; }
+#define AT       at
+#define SIZE     size()
+
+#define DELAY SDL_Delay(16)
+#define BITSHR(a,n) (a>>n)
+#define BITSHL(a,n) ((long long)a<<n)
+
+typedef std::vector<uint64_t> BLOB;
+typedef std::vector<int64_t> DATA;
+typedef std::vector<float> LIST;
+
 #include "GROB.hpp"
 
 #include "RGB.hpp"

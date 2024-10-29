@@ -43,7 +43,7 @@ void DIMGROB_P(GROB& Gx, int width, int height, color_t color) {
 }
 
 
-void DIMGROB_P(GROB& Gx, int width, int height, blob& list) {
+void DIMGROB_P(GROB& Gx, int width, int height, BLOB& list) {
     if (Gx.bytes != nullptr) {
         free(Gx.bytes);
         Gx = {};

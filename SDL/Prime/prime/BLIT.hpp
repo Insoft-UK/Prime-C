@@ -26,8 +26,7 @@
 #define BLIT_hpp
 
 #include "graphics.h"
-#include "GROB.hpp"
-#include "list.hpp"
+#include "prime.hpp"
 
 void BLIT_P(GROB& trgtGx, int dx, int dy, int dw, int dh, GROB& srcGx, int sx, int sy, int sw, int sh, uint8_t alpha = 255);
 void BLIT_P(GROB& trgtGx, int dx, int dy, int dw, int dh, GROB& srcGx, uint8_t alpha = 255);

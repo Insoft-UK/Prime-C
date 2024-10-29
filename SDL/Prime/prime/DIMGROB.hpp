@@ -26,11 +26,10 @@
 #define DIMGROB_hpp
 
 #include "graphics.h"
-#include "GROB.hpp"
-#include "list.hpp"
+#include "prime.hpp"
 
 
 void DIMGROB_P(GROB& Gx, int width, int height, color_t color = 0xFFFFFF);
-void DIMGROB_P(GROB& Gx, int width, int height, blob& list);
+void DIMGROB_P(GROB& Gx, int width, int height, BLOB& list);
 
 #endif /* DIMGROB_hpp */

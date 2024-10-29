@@ -235,31 +235,20 @@ void reformatPPLLine(std::string& str) {
         str = regex_replace(str, std::regex(R"( = )"), " == ");
     }
     
-    if (Singleton::Scope::Local == Singleton::shared()->scope) {
-//        if (regex_search(str, std::regex(R"(^(IF|CASE|REPEAT|WHILE|ELSE|UNTIL|THEN|END)\b)"))) {
-//            str.insert(0, std::string((Singleton::shared()->nestingLevel - 1) * INDENT_WIDTH, ' '));
-//        } else {
-//            str.insert(0, std::string(Singleton::shared()->nestingLevel * INDENT_WIDTH, ' '));
-//        }
-        
-//        re = std::regex(R"(^ *\b(THEN)\b)", std::regex_constants::icase);
-//        str = regex_replace(str, re, std::string((Singleton::shared()->nestingLevel - 1) * INDENT_WIDTH, ' ') + "$1");
-        
-    
-        
-//        if (regex_search(str, std::regex(R"(\bEND;$)"))) {
-//            str = regex_replace(str, std::regex(R"(;(.+))"), ";\n" + std::string(Singleton::shared()->nestingLevel * INDENT_WIDTH, ' ') + "$1");
-//        } else {
-//            str = regex_replace(str, std::regex(R"(;(.+))"), ";\n" + std::string((Singleton::shared()->nestingLevel - 1) * INDENT_WIDTH, ' ') + "$1");
-//        }
-    }
     
     if (Singleton::Scope::Global == Singleton::shared()->scope) {
         str = regex_replace(str, std::regex(R"(^ *END;$)"), "$0\n");
         str = regex_replace(str, std::regex(R"(^ *LOCAL +)"), "");
     }
     
-    str = regex_replace(str, std::regex(R"((.+;)(.+)$)"), "$1\n$2");
+
+    re = R"(\b(BEGIN|IF|WHILE|REPEAT|CASE|ELSE|DEFAULT)\b)";
+    if (regex_search(str, re)) {
+        str.insert(0, std::string((Singleton::shared()->nestingLevel - 1) * INDENT_WIDTH, ' '));
+    }
+    else {
+        str.insert(0, std::string(Singleton::shared()->nestingLevel * INDENT_WIDTH, ' '));
+    }
     
     strings.restoreStrings(str);
 }
@@ -282,14 +271,9 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     std::smatch match;
     std::ifstream infile;
     
-    static std::vector<std::string> openBrace;
-    static std::vector<std::string> closingBrace;
+    static std::vector<std::string> closingScope;
     
     Singleton *singleton = Singleton::shared();
-    
-
-    
-    static bool multiLineComment = false;
     
     
     /*
@@ -309,27 +293,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     ln = regex_replace(ln, std::regex(R"(\s+)"), " "); // All multiple whitespaces in succesion to a single space, future reg-ex will not require to deal with '\t', only spaces.
     
     
-    if (multiLineComment) {
-        multiLineComment = !regex_search(ln, std::regex(R"(\*\/ *$)"));
-        ln = std::string("");
-        return;
-    }
-    
-    if (std::regex_match(ln, std::regex(R"(^\ *\/\*)"))) {
-        multiLineComment = true;
-        ln = std::string("");
-        return;
-    }
-    
-    if (preprocessor.disregard == true) {
-        preprocessor.parse(ln);
-        ln = std::string("");
-        return;
-    }
-
-    
-    
-    
     // Remove any leading white spaces before or after.
     trim(ln);
     removeWhitespaceAroundOperators(ln);
@@ -345,7 +308,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
             // Flagged with #include preprocessor for file inclusion, we process it before continuing.
             translatePrimeCToPPL(preprocessor.pathname, outfile);
         }
-
+        
         ln = std::string("");
         return;
     }
@@ -354,14 +317,14 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         ln = std::string("");
         return;
     }
-
-     
+    
+    
     /*
      In C++, the standard library provides support for regular expressions
      through the <regex> library, but it does not support lookbehind
      assertions (such as (?<!...)) directly, as they are not part of the
      regular expressions supported by the C++ Standard Library.
-
+     
      However, we can work around this limitation by adjusting your regular
      expression to achieve the same result using alternative techniques.
      
@@ -390,6 +353,13 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         
     }
     
+    re = R"(\bEND\b)";
+    if (std::regex_search(ln, match, re) && closingScope.size()) {
+        std::string s = closingScope.front();
+        closingScope.pop_back();
+        ln.insert(match.position(), s + "\n");
+    }
+    
     
     ln = expandAssignment(ln);
     Bitwise::parse(ln);
@@ -399,31 +369,39 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     
     re = R"(0b([01]+))";
     ln = std::regex_replace(ln, re, "#$1:64b");
-  
-    
-    re = R"( *\b(void|unsigned)\b *)";
-    ln = std::regex_replace(ln, re, "");
-    
-    re = R"(\bconst +(long|short|int|char|float|double)\b)";
-    ln = std::regex_replace(ln, re, "const");
-    
-    re = R"(\b(long|short|int|char|float|double)\b)";
-    ln = std::regex_replace(ln, re, "var");
-    
-    re = R"(\b(blob|list)\b)";
-    ln = std::regex_replace(ln, re, "var");
     
     
-    re = R"(\b([a-zA-Z_]\w*)\.at\((\d+)\))";
+    re = R"(\b([a-zA-Z_]\w*)\.AT\((.+)\))";
     ln = std::regex_replace(ln, re, "$1[$2]");
     
     re = R"(\( *G0 *,)";
     ln = std::regex_replace(ln, re, "(");
-
+    
+    re = R"((SUB|FUNCTION) +)";
+    ln = std::regex_replace(ln, re, "");
+    
+    re = R"((BLOB|LIST|DATA))";
+    ln = std::regex_replace(ln, re, "LOCAL");
+    
+    re = R"(END(CASE)?)";
+    ln = std::regex_replace(ln, re, "END;");
+    
+    re = R"(\b(BEGIN|THEN|DO|CASE|REPEAT)\b)";
+    if (std::regex_search(ln, re)) {
+        singleton->setNestingLevel(singleton->nestingLevel + 1);
+    }
+    
+    
+    
+    re = R"(\b(END|UNTIL)\b)";
+    if (std::regex_search(ln, re)) {
+        singleton->setNestingLevel(singleton->nestingLevel - 1);
+    }
+    
     Alias::parse(ln);
     ln = singleton->aliases.resolveAllAliasesInText(ln);
     
-
+    
     
     // PPL uses := instead of C's = for assignment. Converting all = to PPL style :=
     re = R"(([^:=]|^)(?:=)(?!=))";
@@ -434,43 +412,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\]\[)";
     ln = std::regex_replace(ln, re, ",");
     
-    // Handling of opening brace.
-    if (ln == "{") {
-        singleton->setNestingLevel(singleton->nestingLevel + 1);
-        
-        if (singleton->nestingLevel == 1) {
-            ln = "BEGIN\n";
-            return;
-        }
-        
-        if (!openBrace.empty()) {
-            ln = openBrace.back();
-            openBrace.pop_back();
-            return;
-        }
-    }
     
-    // Handling of closing brace.
-    if (ln == "}") {
-        
-        singleton->setNestingLevel(singleton->nestingLevel - 1);
-        
-        if (0 == singleton->nestingLevel) {
-            ln = "END;\n";
-            return;
-        }
-        if (singleton->nestingLevel < 0) {
-            std::cout << MessageType::Error << "unexpected '}' missing '{'\n";
-        }
-        
-        if (!closingBrace.empty()) {
-            ln = closingBrace.back();
-            closingBrace.pop_back();
-            return;
-        }
-    }
-    
-
     if (singleton->scope == Singleton::Scope::Global) {
         re = R"(^ *(KS?A?_[A-Z\d][a-z]*) *$)";
         std::sregex_token_iterator it = std::sregex_token_iterator {
@@ -487,47 +429,13 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         re = R"(^main\b)";
         ln = std::regex_replace(ln, re, "START");
     }
-
-    
     
     if (singleton->scope == Singleton::Scope::Local) {
         singleton->switches.parse(ln);
         
         translateCLogicalOperatorsToPPL(ln);
         
-        re = R"(var\b)";
-        ln = std::regex_replace(ln, re, "LOCAL");
-        re = R"(const\b)";
-        ln = std::regex_replace(ln, re, "CONST");
-        
-        re = R"(^(if|while|for)\((.+)\)$)";
-        ln = std::regex_replace(ln, re, "$1 $2");
-        
-        re = R"(^ *while\((.+)\);$)";
-        ln = std::regex_replace(ln, re, "UNTIL NOT($1)");
-        
-        if (ln.substr(0, 3) == "if ") {
-            openBrace.push_back(std::string(" THEN\n"));
-            closingBrace.push_back("END;\n");
-        }
-        
-        if (ln.substr(0, 3) == "do") {
-            ln = "REPEAT";
-            openBrace.push_back("");
-            closingBrace.push_back("");
-        }
-        
-        if (ln.substr(0, 4) == "else") {
-            openBrace.push_back(std::string("\n"));
-            closingBrace.push_back("END;\n");
-        }
-        
-        if (ln.substr(0, 6) == "while ") {
-            openBrace.push_back(std::string(" DO\n"));
-            closingBrace.push_back("END;\n");
-        }
-        
-        re = R"(\bfor\b(.*);(.*);(.*))";
+        re = R"(\bFOR\b *\((.*);(.*);(.*)\) *DO\b)";
         if (std::regex_search(ln, match, re)) {
             std::string init, condition, increment, ppl;
             
@@ -536,38 +444,31 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
             increment = trim_copy(match[3].str());
             
             if (!init.empty()) {
-                ppl.append(init + ";\n");
+                ppl.append("\n" + std::string((singleton->nestingLevel - 1) * INDENT_WIDTH, ' ') + init + ";\n");
             }
-            ppl.append("WHILE " + (condition.empty() ? "1" : condition));
+            ppl.append("\n " + std::string((singleton->nestingLevel - 1) * INDENT_WIDTH, ' ') + "WHILE " + (condition.empty() ? "1" : condition) + " DO");
             
-            openBrace.push_back(std::string(" DO\n"));
+            
             
             if (!increment.empty()) {
-                closingBrace.push_back(increment + ";\nEND;\n");
+                closingScope.push_back(std::string(singleton->nestingLevel * INDENT_WIDTH, ' ') + increment + ";\n" + std::string(singleton->nestingLevel * INDENT_WIDTH, ' '));
             } else {
-                closingBrace.push_back("END;\n");
+//                closingScope.push_back(std::string(singleton->nestingLevel * INDENT_WIDTH, ' ') + "END;\n");
             }
             
             ln = ln.replace(match.position(), match.length(), ppl);
         }
     }
     
+    //    Calc::parse(ln);
     
-    Calc::parse(ln);
-    capitalizePPLKeywords(ln);
+    
+    ln = regex_replace(ln, std::regex(R"( *:= *)"), " := ");
     
     strings.restoreStrings(ln);
+    reformatPPLLine(ln);
     
-    ln = regex_replace(ln, std::regex(R"( *:= *)"), ":=");
-    ln = regex_replace(ln, std::regex(R"( {2})"), " ");
-    
-#ifdef DEBUG
     ln.append("\n");
-#else
-    if (ln.at(ln.length() - 1) != ';') {
-        ln.append(" ");
-    }
-#endif
 }
 
 void writeUTF16Line(const std::string& str, std::ofstream& outfile) {
@@ -603,6 +504,41 @@ void writeUTF16(const std::string& str, std::ofstream& outfile) {
     }
 }
 
+bool isBlockCommentStart(const std::string str) {
+    std::regex re(R"(^ *\/\* *)");
+    return std::regex_search(str, re);
+}
+
+void convertToLineComment(std::string& str) {
+    std::regex re(R"(^ *\/\* *)");
+    
+    str = std::regex_replace(str, re, "//");
+    str.append("\n");
+}
+
+void writeBlockAsLineComments(std::ifstream& infile, std::ofstream& outfile) {
+    std::regex re;
+    std::string str;
+    
+    Singleton::shared()->incrementLineNumber();
+    
+    re = R"( *\*\/(.*)$)";
+    
+    while(getline(infile, str)) {
+        if (std::regex_search(str, re)) {
+            str = std::regex_replace(str, re, "//$1");
+            str.append("\n");
+            writeUTF16Line(str, outfile);
+            Singleton::shared()->incrementLineNumber();
+            break;
+        }
+        str.insert(0, "// ");
+        str.append("\n");
+        writeUTF16Line(str, outfile);
+        Singleton::shared()->incrementLineNumber();
+    }
+}
+
 void translatePrimeCToPPL(const std::string& pathname, std::ofstream& outfile)
 {
     Singleton& singleton = *Singleton::shared();
@@ -618,61 +554,32 @@ void translatePrimeCToPPL(const std::string& pathname, std::ofstream& outfile)
     if (!infile.is_open()) exit(2);
     
     while(getline(infile, utf8)) {
-        std::istringstream iss;
+        // Convert any `/* comment */` to `// comment`
+        re = R"(\/\*(.*)(?:(\*\/)))";
+        utf8 = regex_replace(utf8, re, "//$1\n");
         
-        if (!preprocessor.ppl && !preprocessor.python) {
-            // Pre-Parse
-            trim(utf8);
-            utf8 = removeWhitespaceAroundOperators(utf8);
-            
-            re = R"((.+)\{)";
-            utf8 = std::regex_replace(utf8, re, "$1\n{");
-            
-            re = R"(([={,]) *\n\{)";
-            utf8 = std::regex_replace(utf8, re, "$1{");
-            
-            re = R"(\}([^;]))";
-            utf8 = std::regex_replace(utf8, re, "}\n$1");
-            
-            re = R"(([},\d")]) *\n\})";
-            utf8 = std::regex_replace(utf8, re, "$1}");
-            
-            re = R"( *\n,)";
-            utf8 = std::regex_replace(utf8, re, ",");
-                     
-            // Make sure all `var` or `const` are on seperate lines.
-            re = R"((\S+.*)\b(const|var)\b)";
-            utf8 = regex_replace(utf8, re, "$1\n$2");
- 
-           
-            re = R"(\/\/.*$)";
-            utf8 = regex_replace(utf8, re, "");
+        if (isBlockCommentStart(utf8)) {
+            convertToLineComment(utf8);
+            writeUTF16Line(utf8, outfile);
+            writeBlockAsLineComments(infile, outfile);
+            continue;
         }
         
+        re = R"(\/\/.*$)";
+        utf8 = regex_replace(utf8, re, "");
+        
+        
+        std::istringstream iss;
         iss.str(utf8);
         
         while(getline(iss, str)) {
             translatePrimeCLine(str, outfile);
-            ppl.append(str);
+            writeUTF16(str, outfile);
         }
         
         Singleton::shared()->incrementLineNumber();
     }
-    
-
-    re = R"(\bEND;\n *(ELSE) *\n)";
-    ppl = regex_replace(ppl, re, "$1");
-    
-    re = R"(\n *( (?:THEN|DO)))";
-    ppl = regex_replace(ppl, re, "$1");
-    ppl = regex_replace(ppl, std::regex(R"( {2})"), " ");
-#ifndef DEBUG
-    ppl = regex_replace(ppl, std::regex(R"(;\n *)"), ";");
-#endif
-    
-    writeUTF16(ppl, outfile);
    
-    
     infile.close();
     singleton.popPathname();
 }
