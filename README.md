@@ -1,6 +1,6 @@
 <img src="../../../Insoft-UK/blob/main/assets/logo.svg" width="80" height="80" />
 
-# Prime C for HP Prime
+# Prime-C for HP Prime
 <img src="https://raw.githubusercontent.com/Insoft-UK/Prime-C/main/assets/Prime-C_Logo.svg" style="width: 128px" />
 Prime-C is a high-level general-purpose programming language that adds some elements of C to the PPL programming language.
 <br />
