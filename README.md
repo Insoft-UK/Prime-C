@@ -1,3 +1,6 @@
+<img src="../../../Insoft-UK/blob/main/assets/logo.svg" width="80" height="80" />
+
+# Prime C for HP Prime
 <img src="https://raw.githubusercontent.com/Insoft-UK/Prime-C/main/assets/Prime-C_Logo.svg" style="width: 128px" />
 Prime-C is a compiler for a hybrid PPL + C language that translates code into pure PPL (Prime Programming Language) for the HP Prime calculator.
 
