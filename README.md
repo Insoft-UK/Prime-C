@@ -13,4 +13,4 @@ This experimental project is expected to undergo significant evolution as develo
 Experimental, not to be used for actual software development.
 
 >[!NOTE]
-When compiling for macOS, Windows, or Linux, the project will use a C++ library to emulate PPL functions. A Xcode SpriteKit based macOS app will be utilized to create a simulator for the HP Prime environment, allowing one to easly test and debug an HP Prime app written in Prime-C.
+When compiling for macOS, the project will use a C++ library to emulate PPL functions. A Xcode SpriteKit based macOS app is utilized to create a simulator for the HP Prime environment, allowing one to easly test and debug an HP Prime app written in Prime-C.
