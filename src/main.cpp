@@ -154,7 +154,7 @@ std::string expandAssignment(const std::string& expression) {
     std::string str = expression;
     std::regex re;
     
-    re = R"(([A-Za-z]\w*(?:\[.*\])*)([*\/+\-&|^%]|(?:>>|<<))=)";
+    re = R"(([A-Za-z]\w* *(?:\[.*\])*)([*\/+\-&|^%]|(?:>>|<<))=)";
     str = regex_replace(str, re, "$1:=$1$2");
     
     
@@ -175,6 +175,7 @@ void translateCLogicalOperatorsToPPL(std::string& str) {
 // MARK: - Prime-C To PPL Translater...
 void reformatPPLLine(std::string& str) {
     std::regex re;
+    std::smatch match;
     
     Strings strings = Strings();
     
@@ -200,6 +201,7 @@ void reformatPPLLine(std::string& str) {
     str = regex_replace(str, std::regex(R"(^ +(\} *;))"), "$1\n");
     str = regex_replace(str, std::regex(R"(\{ +\})"), "{}");
     
+    str = regex_replace(str, std::regex(R"( +(AND|OR|NOT) +)"), " $1 ");
     
     /*
      To prevent correcting over-modifications, first replace all double `==` with a single `=`.
@@ -232,13 +234,19 @@ void reformatPPLLine(std::string& str) {
         str = regex_replace(str, std::regex(R"( = )"), " == ");
     }
     
+    str = regex_replace(str, std::regex(R"(;(END|WHILE)\b)"), "; $1");
     
     if (Singleton::Scope::Global == Singleton::shared()->scope) {
         str = regex_replace(str, std::regex(R"(^ *END;$)"), "$0\n");
         str = regex_replace(str, std::regex(R"(^ *LOCAL +)"), "");
     }
     
-
+    re = R"(\[(\((\d+)\) *\+ *1)\])";
+    if (std::regex_search(str, match, re)) {
+        int digit = atoi(match[2].str().c_str());
+        str = str.replace(match.position(), match.length(), "[" + std::to_string(++digit) + "]");
+    }
+    
     re = R"(\b(BEGIN|IF|WHILE|REPEAT|CASE|ELSE|DEFAULT)\b)";
     if (regex_search(str, re)) {
         str.insert(0, std::string((Singleton::shared()->nestingLevel - 1) * INDENT_WIDTH, ' '));
@@ -347,13 +355,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         
     }
     
-    re = R"(\bEND\b)";
-    if (std::regex_search(ln, match, re) && closingScope.size()) {
-        std::string s = closingScope.front();
-        closingScope.pop_back();
-        ln.insert(match.position(), s + "\n");
-    }
-    
     
     ln = expandAssignment(ln);
     
@@ -369,26 +370,36 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"((sub|function) +)";
     ln = std::regex_replace(ln, re, "");
     
-    re = R"((BLOB|LIST|DATA|INTEGER))";
+    re = R"((BLOB|LIST|DATA|integer|real))";
     ln = std::regex_replace(ln, re, "LOCAL");
     
-    re = R"(END(CASE)?)";
-    ln = std::regex_replace(ln, re, "END;");
+//    re = R"(END(CASE)?)";
+//    ln = std::regex_replace(ln, re, "END;");
     
-    re = R"(\{)";
+    
+    
+    capitalizePPLKeywords(ln);
+    
+    re = R"(^ *\} *ELSE *\{ *$)";
+    ln = regex_replace(ln, re, "ELSE");
+    
+    re = R"((?:(?:\)|REPEAT) *\{|^ *BEGIN) *$)";
     if (std::regex_search(ln, re)) {
-        if (singleton->scope == Singleton::Scope::Global) {
-            ln = std::regex_replace(ln, re, "BEGIN");
-        }
         singleton->setNestingLevel(singleton->nestingLevel + 1);
     }
     
-    re = R"(\})";
+    re = R"(^ *(?:\}|END|\} *UNTIL\(.+\);) *$)";
     if (std::regex_search(ln, re)) {
+        if (std::regex_search(ln, match, std::regex(R"(^ *\} *UNTIL\((.+)\); *$)"))) {
+            std::string statement;
+            statement = trim_copy(match[1].str());
+            ln = ln.replace(match.position(), match.length(), "UNTIL " + statement + ";");
+        }
+        
         if (closingScope.empty()) {
             ln = std::regex_replace(ln, re, "END;");
         } else {
-            ln = std::regex_replace(ln, re, closingScope.front() + "END;");
+            ln = std::regex_replace(ln, re, closingScope.back() + "END;");
             closingScope.pop_back();
         }
         
@@ -404,7 +415,9 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(([^:=]|^)(?:=)(?!=))";
     ln = std::regex_replace(ln, re, "$1 := ");
     
+    re = R"(\[([^\[\]]+)\])";
     ln = regex_replace(ln, std::regex(R"(\[([^\[\]]+)\])"), "[($1)+1]");
+
     
     re = R"(\]\[)";
     ln = std::regex_replace(ln, re, ",");
@@ -432,7 +445,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         
         translateCLogicalOperatorsToPPL(ln);
         
-        re = R"(\bfor\b *\((.*);(.*);(.*)\) *\{)";
+        re = R"(\bFOR\b *\((.*);(.*);(.*)\) *\{)";
         if (std::regex_search(ln, match, re)) {
             std::string init, condition, increment, ppl;
             
@@ -441,19 +454,45 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
             increment = trim_copy(match[3].str());
             
             if (!init.empty()) {
-                ppl.append("\n" + std::string((singleton->nestingLevel - 1) * INDENT_WIDTH, ' ') + init + ";\n");
+                ppl.append(init + ";");
             }
-            ppl.append("\n " + std::string((singleton->nestingLevel - 1) * INDENT_WIDTH, ' ') + "WHILE " + (condition.empty() ? "1" : condition) + " DO");
+            ppl.append("WHILE " + (condition.empty() ? "1" : condition) + " DO");
             
             
             
             if (!increment.empty()) {
-                closingScope.push_back(std::string((singleton->nestingLevel - 1) * INDENT_WIDTH, ' ') + increment + ";\n" + std::string(singleton->nestingLevel * INDENT_WIDTH, ' '));
+                closingScope.push_back(increment + ";");
             } else {
-//                closingScope.push_back(std::string(singleton->nestingLevel * INDENT_WIDTH, ' ') + "END;\n");
+                closingScope.push_back("END;\n");
             }
             
             ln = ln.replace(match.position(), match.length(), ppl);
+        }
+        
+        re = R"(\bIF\b *\((.*)\) *\{)";
+        if (std::regex_search(ln, match, re)) {
+            std::string statement, ppl;
+            statement = trim_copy(match[1].str());
+            closingScope.push_back("");
+            ppl.append("IF " + statement + " THEN");
+            ln = ln.replace(match.position(), match.length(), ppl);
+        }
+        
+        re = R"(\bWHILE\b *\((.*)\) *\{)";
+        if (std::regex_search(ln, match, re)) {
+            std::string statement, ppl;
+            statement = trim_copy(match[1].str());
+            closingScope.push_back("");
+            ppl.append("WHILE " + statement + " DO");
+            ln = ln.replace(match.position(), match.length(), ppl);
+        }
+        
+        re = R"(\bREPEAT\b *\{)";
+        if (std::regex_search(ln, match, re)) {
+            std::string statement;
+            statement = trim_copy(match[1].str());
+            closingScope.push_back("");
+            ln = ln.replace(match.position(), match.length(), "REPEAT");
         }
     }
     

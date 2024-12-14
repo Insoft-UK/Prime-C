@@ -25,7 +25,7 @@
 
 #include "prime.hpp"
 
-SUB START()
+real START()
 BEGIN
     
     BLOB l = {0x7C0003E0001F7FE0,0x007F7FE003E07C00,0x7FFF00007FFF0000,0x00007FFF00007FFF};
@@ -51,18 +51,19 @@ BEGIN
 //
 //    DIMGROB_P(G1, 20, 40, RGB(255, 128, 0));
 //    BLIT_P(G0, 0, 0, 128, 128, G2, 0, 0, 4, 4);
-//    BLIT_P(G0, 0, 0, 32, 16, G3, 0, 0, 4, 1);
+    BLIT_P(G0, 0, 0, 32, 16, G2, 0, 0, 4, 1);
 //
 //
 RECT_P(G0, 0, 0, 20, 240, RGB(255, 0, 0, 0));
 //PIXON_P(G0, 10, 10, RGB(0, 255, 255, 0));
 
-    WHILE (1) DO
+while (1) {
+    SLEEP;
+}
 
- 
+repeat {
+    
+} until (1);
 
-        SLEEP;
-    END
-
-    RETURN;
+    return 0;
 END
