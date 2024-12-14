@@ -51,7 +51,7 @@ void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t edgeColor, color_t
  @param    y2   Height in pixels
  @param    color Specifies what fill color to draw with. It is in ARGB 8888 format.
  */
-void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t color = 0xFFFFFF);
+void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t color);
     
 /**
  The Alpha Channel  0 (opaque) to 255 (transparent).

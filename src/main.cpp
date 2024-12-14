@@ -38,10 +38,8 @@
 #include "common.hpp"
 
 #include "preprocessor.hpp"
-#include "enums.hpp"
 #include "alias.hpp"
 #include "strings.hpp"
-#include "bitwise.hpp"
 #include "calc.hpp"
 
 #include "build.h"
@@ -51,7 +49,6 @@
 using namespace pp;
 
 static Preprocessor preprocessor = Preprocessor();
-static Enums enumerators = Enums();
 static Strings strings = Strings();
 
 static std::string _basename;
@@ -313,10 +310,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         return;
     }
     
-    if (enumerators.parse(ln)) {
-        ln = std::string("");
-        return;
-    }
+   
     
     
     /*
@@ -362,7 +356,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     
     
     ln = expandAssignment(ln);
-    Bitwise::parse(ln);
     
     re = R"(0x([\dA-F]+))";
     ln = std::regex_replace(ln, re, "#$1:64h");
@@ -373,7 +366,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\( *G0 *,)";
     ln = std::regex_replace(ln, re, "(");
     
-    re = R"((SUB|FUNCTION) +)";
+    re = R"((sub|function) +)";
     ln = std::regex_replace(ln, re, "");
     
     re = R"((BLOB|LIST|DATA|INTEGER))";
@@ -382,15 +375,23 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(END(CASE)?)";
     ln = std::regex_replace(ln, re, "END;");
     
-    re = R"(\b(BEGIN|THEN|DO|CASE|REPEAT)\b)";
+    re = R"(\{)";
     if (std::regex_search(ln, re)) {
+        if (singleton->scope == Singleton::Scope::Global) {
+            ln = std::regex_replace(ln, re, "BEGIN");
+        }
         singleton->setNestingLevel(singleton->nestingLevel + 1);
     }
     
-    
-    
-    re = R"(\b(END|UNTIL)\b)";
+    re = R"(\})";
     if (std::regex_search(ln, re)) {
+        if (closingScope.empty()) {
+            ln = std::regex_replace(ln, re, "END;");
+        } else {
+            ln = std::regex_replace(ln, re, closingScope.front() + "END;");
+            closingScope.pop_back();
+        }
+        
         singleton->setNestingLevel(singleton->nestingLevel - 1);
     }
     
@@ -431,7 +432,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         
         translateCLogicalOperatorsToPPL(ln);
         
-        re = R"(\bFOR\b *\((.*);(.*);(.*)\) *DO\b)";
+        re = R"(\bfor\b *\((.*);(.*);(.*)\) *\{)";
         if (std::regex_search(ln, match, re)) {
             std::string init, condition, increment, ppl;
             
@@ -447,7 +448,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
             
             
             if (!increment.empty()) {
-                closingScope.push_back(std::string(singleton->nestingLevel * INDENT_WIDTH, ' ') + increment + ";\n" + std::string(singleton->nestingLevel * INDENT_WIDTH, ' '));
+                closingScope.push_back(std::string((singleton->nestingLevel - 1) * INDENT_WIDTH, ' ') + increment + ";\n" + std::string(singleton->nestingLevel * INDENT_WIDTH, ' '));
             } else {
 //                closingScope.push_back(std::string(singleton->nestingLevel * INDENT_WIDTH, ' ') + "END;\n");
             }
@@ -677,7 +678,6 @@ int main(int argc, char **argv) {
             args = argv[++n];
             
             if (args.find("a") != std::string::npos) Singleton::shared()->aliases.verbose = true;
-            if (args.find("e") != std::string::npos) enumerators.verbose = true;
             if (args.find("p") != std::string::npos) preprocessor.verbose = true;
         
             continue;

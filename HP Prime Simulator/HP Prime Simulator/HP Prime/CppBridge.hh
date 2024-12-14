@@ -12,6 +12,7 @@
 
 @interface CppBridge : NSObject
 
++ (void)initHPPrime;
 + (void)hpprgm;
 
 @end

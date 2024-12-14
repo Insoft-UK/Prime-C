@@ -43,22 +43,22 @@ extern "C" {
      Based on Alpha, Red, Green and Blue components values (0 to 31)
      The Alpha Channel  1 (opaque) to 0 (transparent).
      
-     @brief    Returns 32-bit TrueColor ARGB.
-     @param    color Specifies the color will be converted. It is in ARGB 1555  format.
+     @brief    Returns 32-bit TrueColor RGBA.
+     @param    color Specifies the color will be converted. It is in RGBA 1555  format.
      @returns  An 32-bit unsigned integer number that can be used as
                the color parameter for a drawing function.
      */
     color_t convertHighColorToTrueColor(uint16_t color);
     
     /**
-    @brief    Inverts the alpha channel of a given color in ARGB 8888 format.
-    @param    argb Specifies the color in ARGB 8888 format, where the alpha channel ranges from 0 (fully transparent) to 255 (fully opaque).
-    @return   A new color in ARGB 8888 format with the alpha channel inverted (i.e., 0 becomes 255 and 255 becomes 0).
+    @brief    Inverts the alpha channel of a given color in RGBA 8888 format.
+    @param    rgba Specifies the color in RGBA 8888 format, where the alpha channel ranges from 0 (fully transparent) to 255 (fully opaque).
+    @return   A new color in RGBA 8888 format with the alpha channel inverted (i.e., 0 becomes 255 and 255 becomes 0).
     */
-    uint32_t invertAlphaChannel(uint32_t argb);
+    uint32_t invertAlphaChannel(uint32_t rgba);
     
     /**
-     @brief    Returns a color in ARGB 8888 format from a given RGB[0-255] value.
+     @brief    Returns a color in RGBA 8888 format from a given RGB[0-255] value.
      @param    r  Red channel
      @param    g  Green channel
      @param    b  Blue channel
@@ -71,7 +71,7 @@ extern "C" {
      @param    y1  Start point y coordinate
      @param    x2  End point x coordinate
      @param    y2  End point y coordinate
-     @param    color Specifies what color the plotted pixel will be. It is in ARGB 8888 format.
+     @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888 format.
      */
     void drawLine(int x1, int y1, int x2, int y2, color_t color);
 
@@ -81,7 +81,7 @@ extern "C" {
      @param    y   Top left corner y coordinate
      @param    w   Width in pixels
      @param    h   Height in pixels
-     @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+     @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
     void drawRect(int x, int y, short w, short h, color_t color);
     
@@ -91,7 +91,7 @@ extern "C" {
      @param    y   Top left corner y coordinate
      @param    w   Width in pixels
      @param    h   Height in pixels
-     @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+     @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
     void fillRect(int x, int y, short w, short h, color_t color);
 
@@ -100,7 +100,7 @@ extern "C" {
      @param    x   Center-point x coordinate.
      @param    y   Center-point y coordinate.
      @param    r   Radius of circle.
-     @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+     @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
     void drawCircle(int x, int y, short r, color_t color);
 
@@ -109,7 +109,7 @@ extern "C" {
      @brief    Draw a circle with filled color
      @param    x   Center-point x coordinate
      @param    y   Center-point y coordinate
-     @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+     @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
     void fillCircle(int x, int y, short r, color_t color);
 
@@ -121,7 +121,7 @@ extern "C" {
      @param    y2  Vertex #2 y coordinate
      @param    x3  Vertex #3 x coordinate
      @param    y3  Vertex #3 y coordinate
-     @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+     @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
     void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, unsigned char color);
 
@@ -133,12 +133,12 @@ extern "C" {
      @param    y2  Vertex #2 y coordinate
      @param    x3  Vertex #3 x coordinate
      @param    y3  Vertex #3 y coordinate
-     @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+     @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
     void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
 
     /**
-     @brief    Creates a ARGB 8888 format color on a grey value.
+     @brief    Creates a RGBA 8888 format color on a grey value.
      @param    shade Shade which can be between 0 (black) and 255 (white).
      */
     unsigned short makeGray(int shade);
@@ -157,7 +157,7 @@ extern "C" {
     @brief    Plots a single pixel at the specified (x, y) coordinates.
     @param    x   Specifies the x coordinate of the pixel.
     @param    y   Specifies the y coordinate of the pixel.
-    @param    color  Specifies the color of the pixel. It is in ARGB 8888 format.
+    @param    color  Specifies the color of the pixel. It is in RGBA 8888 format.
     */
     void plot(unsigned x, unsigned y, color_t color);
     

@@ -27,6 +27,10 @@ extern SUB START();
     return self;
 }
 
++ (void)initHPPrime {
+    memset(displayRAM(), 255, 320 * 240 * 4);
+}
+
 + (void)hpprgm {
     return START();
 }

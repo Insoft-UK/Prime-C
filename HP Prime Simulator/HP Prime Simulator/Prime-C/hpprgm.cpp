@@ -33,34 +33,34 @@ BEGIN
     
     DIMGROB_P(G2, 4, 4, l);
     
-    RECT_P(G0, 0, 0, 320, 240, RGB(0, 255, 0, 0));
+    RECT_P(G0, 0, 0, 320, 240, RGB(0, 0, 0, 0));
+//PIXON_P(G0, 0, 0, RGB(0, 255, 0, 0));
 
-    BLOB blob = {0,0,0,0};
-    INTEGER n, c;
-    FOR (n = 0; n < SIZE(blob); n+=1) DO
-        INTEGER r = 0, g = 0, b = 0;
-        b = BITAND(n, 1) * 255;
-        g = BITAND(BITSR(n,1), 1) * 255;
-        r = BITAND(BITSR(n,2), 1) * 255;
-        c = RGB(r, g, b);
-        c = BITOR(BITSL(c,32), c);
-        blob[n] = c;
-    END
-    DIMGROB_P(G3, 2, 2, blob);
+//    BLOB blob = {0,0,0,0};
+//    INTEGER n, c;
+//FOR (n = 0; n < SIZE(blob); n+=1) DO
+//INTEGER r = 0, g = 0, b = 0;
+//    b = BITAND(n, 1) * 255;
+//    g = BITAND(BITSR(n,1), 1) * 255;
+//    r = BITAND(BITSR(n,2), 1) * 255;
+//    c = RGB(r, g, b);
+//    c = BITOR(BITSL(c,32), c);
+//    blob[n] = c;
+//END
+//    DIMGROB_P(G3, 2, 2, blob);
+//
+//    DIMGROB_P(G1, 20, 40, RGB(255, 128, 0));
+//    BLIT_P(G0, 0, 0, 128, 128, G2, 0, 0, 4, 4);
+//    BLIT_P(G0, 0, 0, 32, 16, G3, 0, 0, 4, 1);
+//
+//
+RECT_P(G0, 0, 0, 20, 240, RGB(255, 0, 0, 0));
+//PIXON_P(G0, 10, 10, RGB(0, 255, 255, 0));
 
-    DIMGROB_P(G1, 20, 40, RGB(255, 128, 0));
-    BLIT_P(G0, 0, 0, 128, 128, G2, 0, 0, 4, 4);
-    BLIT_P(G0, 0, 0, 32, 16, G3, 0, 0, 4, 1);
-    
-    LOCAL i;
-    FOR (i = 0; i < __SCREEN_WIDTH * __SCREEN_HEIGHT; i++) DO
-//        PIXON_P(G0, i % __SCREEN_WIDTH, i / __SCREEN_WIDTH, i);
-    END
-    
-
-    
-    
     WHILE (1) DO
+
+ 
+
         SLEEP;
     END
 

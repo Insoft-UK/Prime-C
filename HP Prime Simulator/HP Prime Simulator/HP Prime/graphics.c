@@ -47,25 +47,25 @@ static void* getDRAM(void) {
  Based on Alpha, Red, Green and Blue components values (0 to 31)
  The Alpha Channel  1 (opaque) to 0 (transparent).
  
- @brief    Returns 32-bit TrueColor ARGB.
- @param    color Specifies the color will be converted. It is in ARGB 1555  format.
+ @brief    Returns 32-bit TrueColor RGBA.
+ @param    color Specifies the color will be converted. It is in RGBA 1555  format.
  @returns  An 32-bit unsigned integer number that can be used as
            the color parameter for a drawing function.
  */
 color_t convertHighColorToTrueColor(uint16_t color) {
-    color_t argb = (uint32_t)(color & 0b111110000000000) << 9 | (uint32_t)(color & 0b1111100000) << 6 | (uint32_t)(color & 0b11111) << 3;
-    argb |= (argb & 0b000010000000100000001000) >> 3;
-    argb |= (argb & 0b001000000010000000100000) >> 4;
-    argb |= (argb & 0b100000001000000010000000) >> 5;
-    if (color & 0x8000) argb |= 0xFF000000;
-    return argb;
+    color_t rgba = (uint32_t)(color & 0b111110000000000) << 9 | (uint32_t)(color & 0b1111100000) << 6 | (uint32_t)(color & 0b11111) << 3;
+    rgba |= (rgba & 0b000010000000100000001000) >> 3;
+    rgba |= (rgba & 0b001000000010000000100000) >> 4;
+    rgba |= (rgba & 0b100000001000000010000000) >> 5;
+    if (color & 0x8000) rgba |= 0xFF000000;
+    return rgba;
 }
 
 /**
  Based on Alpha, Red, Green and Blue components values (0 to 255)
  The Alpha Channel  255 (opaque) to 0 (transparent).
  
- @brief    Returns 32-bit TrueColor ARGB.
+ @brief    Returns 32-bit TrueColor RGBA.
  @param    source the TrueColor to alpha blend.
  @param    dest the TrueColor to alpha blend to.
  @returns  An 32-bit unsigned integer number that can be used as
@@ -74,17 +74,17 @@ color_t convertHighColorToTrueColor(uint16_t color) {
 static uint32_t alphaBlend(uint32_t source, uint32_t dest) {
     // Alpha blending the source and background RGBA colors : ABGR32 (little endian)
     uint32_t alpha = (source >> 24);
-    uint32_t rxbx = (((source & 0x00ff00ff) * alpha) + ((dest & 0x00ff00ff) * (0xff - alpha))) & 0xff00ff00;
-    uint32_t axgx  = ((((source >> 8) & 0x00ff00ff) * alpha) + (((dest >> 8) & 0x00ff00ff) * (0xff - alpha))) & 0xff00ff00;
+    uint32_t RxBx = (((source & 0x00ff00ff) * alpha) + ((dest & 0x00ff00ff) * (0xff - alpha))) & 0xff00ff00;
+    uint32_t xGxA  = ((((source >> 8) & 0x00ff00ff) * alpha) + (((dest >> 8) & 0x00ff00ff) * (0xff - alpha))) & 0xff00ff00;
     
-    return (rxbx >> 8) | axgx;
+    return (RxBx >> 8) | xGxA;
 }
 
 
-uint32_t invertAlphaChannel(uint32_t argb) {
-    uint8_t alpha = (argb >> 24) & 0xFF;
+uint32_t invertAlphaChannel(uint32_t rgba) {
+    uint8_t alpha = (rgba >> 24) & 0xFF;
     uint8_t invertedAlpha = 255 - alpha;
-    return (invertedAlpha << 24) | (argb & 0x00FFFFFF);
+    return (invertedAlpha << 24) | (rgba & 0x00FFFFFF);
 }
 
 /**
@@ -92,7 +92,7 @@ uint32_t invertAlphaChannel(uint32_t argb) {
  @param    x   Left-most x coordinate
  @param    y   Left-most y coordinate
  @param    w   Width in pixels
- @param    color Specifies what color the plotted pixel will be. It is in ARGB 8888  format.
+ @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888  format.
  */
 static void drawFastHLine(unsigned x, unsigned y, unsigned w, color_t color) {
     if (y > LCD_HEIGHT_PX - 1) return;
@@ -107,7 +107,7 @@ static void drawFastHLine(unsigned x, unsigned y, unsigned w, color_t color) {
  @param    x   Top-most x coordinate
  @param    y   Top-most y coordinate
  @param    h   Height in pixels
- @param    color Specifies what color the plotted pixel will be. It is in ARGB 8888 format.
+ @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888 format.
  */
 static void drawFastVLine(unsigned x, unsigned y, unsigned h, color_t color) {
     if (x > LCD_WIDTH_PX - 1) return;
@@ -125,13 +125,13 @@ static void swap(int *x, int *y) {
 }
 
 /**
- @brief    Returns a color in ARGB 8888 format from a given RGB[0-255] value.
+ @brief    Returns a color in RGBA 8888 format from a given RGB[0-255] value.
  @param    r  Red channel
  @param    g  Green channel
  @param    b  Blue channel
  */
 color_t rgb(unsigned char r, unsigned char g, unsigned char b) {
-    return (color_t)r << 16 | (color_t)g << 8 | (color_t)b;
+    return (color_t)r | (color_t)g << 8 | (color_t)b << 16;
 }
 
 /**
@@ -140,7 +140,7 @@ color_t rgb(unsigned char r, unsigned char g, unsigned char b) {
  @param    y1  Start point y coordinate
  @param    x2  End point x coordinate
  @param    y2  End point y coordinate
- @param    color Specifies what color the plotted pixel will be. It is in ARGB 8888 format.
+ @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888 format.
  */
 void drawLine(int x1, int y1, int x2, int y2, color_t color) {
     if (x1 == x2) {
@@ -231,7 +231,7 @@ void fillRect(int x, int y, short w, short h, color_t color) {
  @param    y   Center-point y coordinate.
  @param    r   Radius of circle.
  @param    cornername  Mask bit #1 or bit #2 to indicate which quarters of the circle we're doing.
- @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+ @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
 static void drawCircleHelper(int x, int y, short r, unsigned char cornername, color_t color) {
     short f = 1 - r;
@@ -273,7 +273,7 @@ static void drawCircleHelper(int x, int y, short r, unsigned char cornername, co
  @param    x   Center-point x coordinate.
  @param    y   Center-point y coordinate.
  @param    r   Radius of circle.
- @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+ @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
 void drawCircle(int x, int y, short r, color_t color) {
     short f = 1 - r;
@@ -315,7 +315,7 @@ void drawCircle(int x, int y, short r, color_t color) {
  @param    r  Radius of circle.
  @param    corners  Mask bits indicating which quarters we're doing.
  @param    delta    Offset from center-point, used for round-rects.
- @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+ @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
 static void fillCircleHelper(int x, int y, short r, unsigned char corners, short delta, color_t color) {
     short f = 1 - r;
@@ -360,7 +360,7 @@ static void fillCircleHelper(int x, int y, short r, unsigned char corners, short
  @brief    Draw a circle with filled color
  @param    x   Center-point x coordinate
  @param    y   Center-point y coordinate
- @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+ @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
 void fillCircle(int x, int y, short r, color_t color) {
     drawFastVLine(x, y - r, 2 * r + 1, color);
@@ -375,7 +375,7 @@ void fillCircle(int x, int y, short r, color_t color) {
  @param    y2  Vertex #2 y coordinate
  @param    x3  Vertex #3 x coordinate
  @param    y3  Vertex #3 y coordinate
- @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+ @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
 void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, unsigned char color) {
     drawLine(x1, y1, x2, y2, color);
@@ -391,7 +391,7 @@ void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, unsigned char 
  @param    y2  Vertex #2 y coordinate
  @param    x3  Vertex #3 x coordinate
  @param    y3  Vertex #3 y coordinate
- @param    color Specifies what color to draw with. It is in ARGB 8888 format.
+ @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
 void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
     
@@ -471,7 +471,7 @@ void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, color_t color)
 
 
 /**
- @brief    Creates a ARGB 8888 format color on a grey value.
+ @brief    Creates a RGBA 8888 format color on a grey value.
  @param    shade Shade which can be between 0 (black) and 255 (white).
  */
 unsigned short makeGray(int shade) {
@@ -503,7 +503,7 @@ void fillArea(unsigned x, unsigned y, unsigned w, unsigned h, color_t color) {
  @brief    Fills a rectangular area of (width,height) with upper-left corner at (x,y)
  @param    x   Specifies the x coordinate of the pixel in range of [0,319]
  @param    y   Specifies the y coordinate of the pixel in range of [0,239]
- @param    color Specifies what color the plotted pixel will be. It is in ARGB 8888 format.
+ @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888 format.
  */
 void plot(unsigned x, unsigned y, color_t color) {
     color_t* DRAM = NULL;

@@ -11,12 +11,10 @@
 		1351CC532BF530CE0073FEDF /* calc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1351CC512BF530CE0073FEDF /* calc.cpp */; };
 		137FB2892A03B06500AEFDF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 137FB2882A03B06500AEFDF2 /* main.cpp */; };
 		138F54DB2C99E2F1009357F9 /* switch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1384DE7B2B6D70DE0090E24D /* switch.cpp */; };
-		139634CD2B9A2DEA005B80F0 /* bitwise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139634CB2B9A2DEA005B80F0 /* bitwise.cpp */; };
 		13B13C312B66C2F000F9BCBB /* strings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13B13C2F2B66C2F000F9BCBB /* strings.cpp */; };
 		13C21F9A2A7829C80067CE22 /* preprocessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13C21F982A7829C80067CE22 /* preprocessor.cpp */; };
 		13C21F9D2A783D8D0067CE22 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13C21F9B2A783D8D0067CE22 /* common.cpp */; };
 		13C21FB42A7892540067CE22 /* alias.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13C21FB22A7892540067CE22 /* alias.cpp */; };
-		13EBE2EA2B2124E200302F26 /* enums.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13EBE2E92B2124E200302F26 /* enums.cpp */; };
 		13F1D8832AB6185400EF623A /* aliases.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F1D8812AB6185400EF623A /* aliases.cpp */; };
 /* End PBXBuildFile section */
 
@@ -49,8 +47,6 @@
 		1384DE7C2B6D70DE0090E24D /* switch.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = switch.hpp; sourceTree = "<group>"; };
 		1389CFEA2CA73BA6008FDBEB /* timer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = timer.hpp; sourceTree = "<group>"; };
 		138F54D22C976F10009357F9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		139634CB2B9A2DEA005B80F0 /* bitwise.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bitwise.cpp; sourceTree = "<group>"; };
-		139634CC2B9A2DEA005B80F0 /* bitwise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bitwise.hpp; sourceTree = "<group>"; };
 		13B13C2F2B66C2F000F9BCBB /* strings.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = strings.cpp; sourceTree = "<group>"; };
 		13B13C302B66C2F000F9BCBB /* strings.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = strings.hpp; sourceTree = "<group>"; };
 		13C21F982A7829C80067CE22 /* preprocessor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = preprocessor.cpp; sourceTree = "<group>"; };
@@ -59,8 +55,6 @@
 		13C21F9C2A783D8D0067CE22 /* common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = common.hpp; sourceTree = "<group>"; };
 		13C21FB22A7892540067CE22 /* alias.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = alias.cpp; sourceTree = "<group>"; };
 		13C21FB32A7892540067CE22 /* alias.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = alias.hpp; sourceTree = "<group>"; };
-		13EBE2E92B2124E200302F26 /* enums.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = enums.cpp; sourceTree = "<group>"; };
-		13EBE2EB2B21275900302F26 /* enums.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = enums.hpp; sourceTree = "<group>"; };
 		13F1D8812AB6185400EF623A /* aliases.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = aliases.cpp; sourceTree = "<group>"; };
 		13F1D8822AB6185400EF623A /* aliases.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = aliases.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,11 +114,9 @@
 				1351CC512BF530CE0073FEDF /* calc.cpp */,
 				13C21F982A7829C80067CE22 /* preprocessor.cpp */,
 				13C21FB22A7892540067CE22 /* alias.cpp */,
-				13EBE2E92B2124E200302F26 /* enums.cpp */,
 				13F1D8812AB6185400EF623A /* aliases.cpp */,
 				13B13C2F2B66C2F000F9BCBB /* strings.cpp */,
 				1384DE7B2B6D70DE0090E24D /* switch.cpp */,
-				139634CB2B9A2DEA005B80F0 /* bitwise.cpp */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -134,12 +126,10 @@
 			children = (
 				1351CC522BF530CE0073FEDF /* calc.hpp */,
 				13C21F992A7829C80067CE22 /* preprocessor.hpp */,
-				13EBE2EB2B21275900302F26 /* enums.hpp */,
 				13C21FB32A7892540067CE22 /* alias.hpp */,
 				13F1D8822AB6185400EF623A /* aliases.hpp */,
 				13B13C302B66C2F000F9BCBB /* strings.hpp */,
 				1384DE7C2B6D70DE0090E24D /* switch.hpp */,
-				139634CC2B9A2DEA005B80F0 /* bitwise.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
@@ -172,7 +162,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					137FB2842A03B06500AEFDF2 = {
 						CreatedOnToolsVersion = 14.3;
@@ -223,11 +213,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13EBE2EA2B2124E200302F26 /* enums.cpp in Sources */,
 				13B13C312B66C2F000F9BCBB /* strings.cpp in Sources */,
 				13C21F9A2A7829C80067CE22 /* preprocessor.cpp in Sources */,
 				137FB2892A03B06500AEFDF2 /* main.cpp in Sources */,
-				139634CD2B9A2DEA005B80F0 /* bitwise.cpp in Sources */,
 				13C21F9D2A783D8D0067CE22 /* common.cpp in Sources */,
 				13C21FB42A7892540067CE22 /* alias.cpp in Sources */,
 				1351CC532BF530CE0073FEDF /* calc.cpp in Sources */,
@@ -377,7 +365,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
-				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
