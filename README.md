@@ -9,7 +9,7 @@ This experimental project is expected to undergo significant evolution as develo
 <br />
 <br />
 # UPDATE
-C like syntax with some PPL syntax, tho more like C than PPL even tho it can be written to resemble PPL syntax more and still compile into pure PPL by using some of the macros like 'and' and 'or'.
+C like syntax with some PPL syntax, tho more like C than PPL even tho it can be written to resemble PPL syntax more and still compile into pure PPL by using some of the macros like ''and'' and 'or'.
 
 >[!WARNING]
 Experimental, not to be used for actual software development.
