@@ -36,15 +36,6 @@ class Scene: SKScene {
         mutableTexture = SKMutableTexture(size: CGSize(width: width, height: height))
         sprite = SKSpriteNode(texture: mutableTexture)
         addChild(sprite!)
-//        CppBridge.initHPPrime()
-//        
-//        let newThread = Thread {
-//            // Code to run in the new thread
-//            CppBridge.hpprgm()
-//        }
-//
-//        // Start the thread
-//        newThread.start()
     }
     
     // MARK: - Keyboard Events

@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 
-static uint32_t _DRAM[LCD_WIDTH_PX * LCD_HEIGHT_PX];
+static color_t _DRAM[LCD_WIDTH_PX * LCD_HEIGHT_PX];
 
 
 void *displayRAM(void) {

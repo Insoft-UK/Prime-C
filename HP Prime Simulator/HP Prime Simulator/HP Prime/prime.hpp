@@ -35,20 +35,37 @@
 #define __SCREEN_WIDTH 320
 #define __SCREEN_HEIGHT 240
 
-#define BEGIN    {
-#define END      }
+#define begin       {
+#define end         }
 
-#define repeat   do
+#define BEGIN       {
+#define END         }
+
+#ifndef __cplusplus
+#define and         &&
+#define or          ||
+#define AND         &&
+#define OR          ||
+#endif
+
+#define repeat      do
+#define REPEAT      do
 #define until(condition) while (!(condition))
-#define LOCAL    double
-#define CONST    const float
-#define sub      void
-#define CASE     for (;;) {
-#define ENDCASE  break; }
+#define UNTIL(condition) while (!(condition))
+#define sub         void
 
-#define integer  int64_t
-#define real     double
-#define IP(n)    ((int64_t)n)
+#define DO          {
+#define THEN        {
+#define IF          if
+#define ELSE        } else {
+#define otherwise   } else {
+#define WHILE       while
+
+#define integer     int64_t
+#define real        double
+#define IP(n)       ((int64_t)n)
+#define LOCAL       int64_t
+#define CONST       const
 
 #define SLEEP std::this_thread::sleep_for(std::chrono::seconds(1))
 

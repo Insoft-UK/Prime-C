@@ -201,8 +201,6 @@ void reformatPPLLine(std::string& str) {
     str = regex_replace(str, std::regex(R"(^ +(\} *;))"), "$1\n");
     str = regex_replace(str, std::regex(R"(\{ +\})"), "{}");
     
-    str = regex_replace(str, std::regex(R"( +(AND|OR|NOT) +)"), " $1 ");
-    
     /*
      To prevent correcting over-modifications, first replace all double `==` with a single `=`.
      
@@ -235,17 +233,14 @@ void reformatPPLLine(std::string& str) {
     }
     
     str = regex_replace(str, std::regex(R"(;(END|WHILE)\b)"), "; $1");
+    str = regex_replace(str, std::regex(R"(\b *(AND|OR|NOT) *\b)"), " $1 ");
     
     if (Singleton::Scope::Global == Singleton::shared()->scope) {
         str = regex_replace(str, std::regex(R"(^ *END;$)"), "$0\n");
         str = regex_replace(str, std::regex(R"(^ *LOCAL +)"), "");
     }
     
-    re = R"(\[(\((\d+)\) *\+ *1)\])";
-    if (std::regex_search(str, match, re)) {
-        int digit = atoi(match[2].str().c_str());
-        str = str.replace(match.position(), match.length(), "[" + std::to_string(++digit) + "]");
-    }
+    
     
     re = R"(\b(BEGIN|IF|WHILE|REPEAT|CASE|ELSE|DEFAULT)\b)";
     if (regex_search(str, re)) {
@@ -354,9 +349,10 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         it = ln.cbegin();
         
     }
-    
-    
+
     ln = expandAssignment(ln);
+    
+    capitalizePPLKeywords(ln);
     
     re = R"(0x([\dA-F]+))";
     ln = std::regex_replace(ln, re, "#$1:64h");
@@ -367,23 +363,48 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\( *G0 *,)";
     ln = std::regex_replace(ln, re, "(");
     
-    re = R"((sub|function) +)";
+    re = R"(\b(sub|function) +)";
     ln = std::regex_replace(ln, re, "");
     
-    re = R"((BLOB|LIST|DATA|integer|real))";
+    re = R"(\b(BLOB|LIST|DATA|integer|real)\b)";
     ln = std::regex_replace(ln, re, "LOCAL");
     
-//    re = R"(END(CASE)?)";
-//    ln = std::regex_replace(ln, re, "END;");
+    re = R"(\bCONST +LOCAL\b)";
+    ln = std::regex_replace(ln, re, "CONST");
+    
+    re = R"(\b(true|YES)\b)";
+    ln = std::regex_replace(ln, re, "1");
+    
+    re = R"(\b(false|NO)\b)";
+    ln = std::regex_replace(ln, re, "0");
     
     
     
-    capitalizePPLKeywords(ln);
+    
+    re = R"(\[([^\[\]]+)\])";
+    ln = regex_replace(ln, std::regex(R"(\[([^\[\]]+)\])"), "[($1)+1]");
+    
+    re = R"(\[(\((\d+)\) *\+ *1)\])";
+    while (std::regex_search(ln, match, re)) {
+        int digit = atoi(match[2].str().c_str());
+        ln = ln.replace(match.position(), match.length(), "[" + std::to_string(++digit) + "]");
+    }
+    
+    re = R"(\]\[)";
+    ln = std::regex_replace(ln, re, ",");
+    
+    re = R"((LOCAL [A-Za-z]\w*)\[.*\]( *= *.*))";
+    ln = std::regex_replace(ln, re, "$1$2");
     
     re = R"(^ *\} *ELSE *\{ *$)";
     ln = regex_replace(ln, re, "ELSE");
     
-    re = R"((?:(?:\)|REPEAT) *\{|^ *BEGIN) *$)";
+    re = R"(\botherwise\b)";
+    ln = regex_replace(ln, re, "ELSE");
+    
+    
+    
+    re = R"((?:(?:\)|REPEAT|CASE) *\{|^ *BEGIN) *$)";
     if (std::regex_search(ln, re)) {
         singleton->setNestingLevel(singleton->nestingLevel + 1);
     }
@@ -414,13 +435,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     // PPL uses := instead of C's = for assignment. Converting all = to PPL style :=
     re = R"(([^:=]|^)(?:=)(?!=))";
     ln = std::regex_replace(ln, re, "$1 := ");
-    
-    re = R"(\[([^\[\]]+)\])";
-    ln = regex_replace(ln, std::regex(R"(\[([^\[\]]+)\])"), "[($1)+1]");
-
-    
-    re = R"(\]\[)";
-    ln = std::regex_replace(ln, re, ",");
     
     
     if (singleton->scope == Singleton::Scope::Global) {
@@ -489,11 +503,10 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         
         re = R"(\bREPEAT\b *\{)";
         if (std::regex_search(ln, match, re)) {
-            std::string statement;
-            statement = trim_copy(match[1].str());
             closingScope.push_back("");
             ln = ln.replace(match.position(), match.length(), "REPEAT");
         }
+
     }
     
     //    Calc::parse(ln);

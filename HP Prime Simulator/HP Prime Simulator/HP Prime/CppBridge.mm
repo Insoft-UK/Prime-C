@@ -6,9 +6,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "prime.hpp"
+#import "display.h"
 
-extern real START();
+extern double START();
 
 @interface CppBridge : NSObject
 
@@ -31,7 +31,7 @@ extern real START();
     memset(displayRAM(), 255, 320 * 240 * 4);
 }
 
-+ (real)hpprgm {
++ (double)hpprgm {
     return START();
 }
 

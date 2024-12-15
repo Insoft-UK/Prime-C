@@ -26,10 +26,12 @@
 #include "prime.hpp"
 
 real START()
-BEGIN
+begin
     
     BLOB l = {0x7C0003E0001F7FE0,0x007F7FE003E07C00,0x7FFF00007FFF0000,0x00007FFF00007FFF};
 
+   
+    
     
     DIMGROB_P(G2, 4, 4, l);
     
@@ -51,19 +53,28 @@ BEGIN
 //
 //    DIMGROB_P(G1, 20, 40, RGB(255, 128, 0));
 //    BLIT_P(G0, 0, 0, 128, 128, G2, 0, 0, 4, 4);
-    BLIT_P(G0, 0, 0, 32, 16, G2, 0, 0, 4, 1);
 //
 //
-RECT_P(G0, 0, 0, 20, 240, RGB(255, 0, 0, 0));
-//PIXON_P(G0, 10, 10, RGB(0, 255, 255, 0));
+//RECT_P(G0, 0, 0, 120, 240, RGB(255, 0, 0, 0));
+//PIXON_P(G0, 10, 10, RGB(0, 0, 0, 0));
 
-while (1) {
-    SLEEP;
-}
+    LOCAL A = 0;
+    IF (A == 0) THEN
+    ELSE
+    END
+
+    LOCAL B = 0;
+    if (B == 0) {
+        otherwise
+    }
+
+const integer C = A * B;
 
 repeat {
+    BLIT_P(G0, 0, 0, 100, 240, G2, 0, 0, 4, 1);
     
-} until (1);
+    SLEEP;
+} until (false);
 
     return 0;
-END
+end
