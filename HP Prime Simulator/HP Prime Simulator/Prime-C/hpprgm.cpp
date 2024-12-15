@@ -65,7 +65,7 @@ begin
 
     LOCAL B = 0;
     if (B == 0) {
-        otherwise
+    } else {
     }
 
 const integer C = A * B;

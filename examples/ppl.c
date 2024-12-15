@@ -17,7 +17,7 @@ begin
         return 0;
     }
 
-    integer counterA=400;
+    integer counterA=400 + 2 * 100;
     while (counterA > 0) {
         counterA-=1;
     }

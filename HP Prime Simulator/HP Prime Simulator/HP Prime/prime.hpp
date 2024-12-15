@@ -58,7 +58,6 @@
 #define THEN        {
 #define IF          if
 #define ELSE        } else {
-#define otherwise   } else {
 #define WHILE       while
 
 #define integer     int64_t

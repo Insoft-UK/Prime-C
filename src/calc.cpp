@@ -326,7 +326,7 @@ bool Calc::parse(std::string& str)
     // Convert any legacy pre-calc instructions to the updated pre-calc format.
     migratePreCalcInstructions(str);
     
-    re = R"(\\( *\d{1,2})?\[(.*)\])";
+    re = R"(( *\d{1,2})?\[(.*)\])";
     while (regex_search(str, match, re)) {
         
         std::string matched = match.str();

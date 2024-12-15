@@ -508,11 +508,16 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         }
 
     }
-    
-    //    Calc::parse(ln);
-    
-    
+
     ln = regex_replace(ln, std::regex(R"( *:= *)"), " := ");
+    
+    re = R"(\b(?:LOCAL|CONST) +[A-Za-z]\w* *:= *([\d \+\-\*\/\(\)]*);)";
+    if (std::regex_search(ln, match, re)) {
+        std::string ppl = "[" + match[1].str() + "]";
+        if (Calc::parse(ppl)) {
+            ln = ln.replace(match.position(1), match.length(1), ppl);
+        }
+    }
     
     strings.restoreStrings(ln);
     reformatPPLLine(ln);
