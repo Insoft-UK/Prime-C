@@ -26,12 +26,14 @@
 
 void PIXON_P(GROB& Gx, int x, int y, color_t color) {
     setDRAM(Gx.bytes);
+    color = convertToRGBA(color);
     color = invertAlphaChannel(color);
     plot(x, y, color);
 }
 
 void PIXON_P(int x, int y, color_t color) {
     setDRAM(G0.bytes);
+    color = convertToRGBA(color);
     color = invertAlphaChannel(color);
     plot(x, y, color);
 }

@@ -53,11 +53,25 @@ static void* getDRAM(void) {
            the color parameter for a drawing function.
  */
 color_t convertHighColorToTrueColor(uint16_t color) {
-    color_t rgba = (uint32_t)(color & 0b111110000000000) << 9 | (uint32_t)(color & 0b1111100000) << 6 | (uint32_t)(color & 0b11111) << 3;
+    uint32_t r, g, b, a;
+    
+    r = (color & 0b111110000000000) >> 7;
+    g = (color & 0b1111100000) >> 2;
+    b = (color & 0b11111) << 3;
+    a = color & 0x8000 ? 255 : 0;
+    
+#ifdef __LITTLE_ENDIAN__
+    color_t rgba = r | g << 8 | b << 16 | a << 24;
     rgba |= (rgba & 0b000010000000100000001000) >> 3;
     rgba |= (rgba & 0b001000000010000000100000) >> 4;
     rgba |= (rgba & 0b100000001000000010000000) >> 5;
-    if (color & 0x8000) rgba |= 0xFF000000;
+#else
+    color_t rgba = r << 24 | g << 16 | b << 8 | a;
+    rgba |= (rgba & 0b00001000000010000000100000000000) >> 3;
+    rgba |= (rgba & 0b00100000001000000010000000000000) >> 4;
+    rgba |= (rgba & 0b10000000100000001000000000000000) >> 5;
+#endif
+   
     return rgba;
 }
 
@@ -80,6 +94,9 @@ static uint32_t alphaBlend(uint32_t source, uint32_t dest) {
     return (RxBx >> 8) | xGxA;
 }
 
+uint32_t convertToRGBA(uint32_t argb) {
+    return argb << 24 | (argb >> 8);
+}
 
 uint32_t invertAlphaChannel(uint32_t rgba) {
     uint8_t alpha = (rgba >> 24) & 0xFF;
@@ -220,7 +237,9 @@ void drawRect(int x, int y, short w, short h, color_t color) {
 
 
 void fillRect(int x, int y, short w, short h, color_t color) {
-    while (h--) {
+    while (h-- > 0) {
+        if (y >= LCD_HEIGHT_PX) break;
+        if (y < 0) continue;
         drawFastHLine(x, y++, w, color);
     }    
 }
@@ -530,7 +549,7 @@ void drawBitmapScaled(int dx, int dy, int width, int height, float scale_x, floa
                     // Calculate the scaled position
                     int posX = (int)(x * scale_x + sx);
                     int posY = (int)(y * scale_y + sy);
-                    plot(posX + dx, posY + dy, invertAlphaChannel(color));
+                    plot(posX + dx, posY + dy, color);
                 }
             }
         }

@@ -25,5 +25,5 @@
 #include "GROB.hpp"
 #include "graphics.h"
 
-GROB G0 = {.width = LCD_WIDTH_PX, .height = LCD_HEIGHT_PX, .bytes = displayRAM()};
+GROB G0 = {.width = LCD_WIDTH_PX, .height = LCD_HEIGHT_PX, .bytes = 0};
 GROB G1, G2, G3, G4, G5, G6, G7, G8, G9 = {};

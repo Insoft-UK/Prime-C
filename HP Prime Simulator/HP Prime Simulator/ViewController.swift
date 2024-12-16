@@ -32,7 +32,7 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let scene:SKScene = Scene.init()
+        let scene:SKScene = Scene.init(size: CGSizeMake(320, 240))
         scene.scaleMode = .aspectFill
         skView.presentScene(scene)
     }

@@ -65,6 +65,8 @@
 #define IP(n)       ((int64_t)n)
 #define LOCAL       int64_t
 #define CONST       const
+#define Int         int
+#define Float       float
 
 #define SLEEP std::this_thread::sleep_for(std::chrono::seconds(1))
 

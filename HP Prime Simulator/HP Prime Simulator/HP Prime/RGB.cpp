@@ -25,6 +25,6 @@
 #include "RGB.hpp"
 
 color_t RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha) {
-    color_t color = rgb(r, g, b) | (color_t)alpha << 24;
+    color_t color = rgb(r, g, b) << 8 | (color_t)alpha;
     return color;
 }

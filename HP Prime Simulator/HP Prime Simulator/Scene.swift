@@ -28,13 +28,17 @@ class Scene: SKScene {
     private var mutableTexture: SKMutableTexture?
     private var sprite: SKSpriteNode?
     
-    let width = 320   // New width
-    let height = 240  // New height
+    let width = 320
+    let height = 240
     let bytesPerPixel = 4
     
     override func didMove(to view: SKView) {
         mutableTexture = SKMutableTexture(size: CGSize(width: width, height: height))
-        sprite = SKSpriteNode(texture: mutableTexture)
+        sprite = SKSpriteNode(color: .red, size: CGSize(width: width, height: height))
+        sprite?.texture = mutableTexture;
+        sprite?.anchorPoint = .zero;
+        sprite?.yScale = -1;
+        sprite?.position.y = CGFloat(height);
         addChild(sprite!)
     }
     

@@ -26,16 +26,20 @@
 
 void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t edgeColor, color_t fillColor) {
     setDRAM(Gx.bytes);
+    edgeColor = convertToRGBA(edgeColor);
+    fillColor = convertToRGBA(fillColor);
     fillRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(fillColor));
     drawRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(edgeColor));
 }
 
 void RECT_P(GROB& Gx, int x1, int y1, int x2, int y2, color_t color) {
     setDRAM(Gx.bytes);
+    color = convertToRGBA(color);
     fillRect(x1, y1, x2 - x1, y2 - y1, invertAlphaChannel(color));
 }
 
 void RECT_P(GROB& Gx, color_t color) {
     setDRAM(Gx.bytes);
+    color = convertToRGBA(color);
     fillRect(0, 0, LCD_WIDTH_PX, LCD_HEIGHT_PX, invertAlphaChannel(color));
 }

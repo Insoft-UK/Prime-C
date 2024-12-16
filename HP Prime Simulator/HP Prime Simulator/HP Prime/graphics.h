@@ -58,6 +58,12 @@ extern "C" {
     uint32_t invertAlphaChannel(uint32_t rgba);
     
     /**
+     @brief    Returns a color in RGBA 8888 format from a given ARGB value.
+     @param    argb  ARGB
+     */
+    uint32_t convertToRGBA(uint32_t argb);
+    
+    /**
      @brief    Returns a color in RGBA 8888 format from a given RGB[0-255] value.
      @param    r  Red channel
      @param    g  Green channel

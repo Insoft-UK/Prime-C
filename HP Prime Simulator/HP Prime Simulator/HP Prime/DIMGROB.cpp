@@ -23,6 +23,8 @@
  */
 
 #include "DIMGROB.hpp"
+#include "RECT.hpp"
+
 #include <iostream>
 
 void DIMGROB_P(GROB& Gx, int width, int height, color_t color) {
@@ -32,14 +34,12 @@ void DIMGROB_P(GROB& Gx, int width, int height, color_t color) {
     }
     
     if (width <= 0 && height <= 0) return;
-    Gx.bytes = malloc(width * height * 4);
+    Gx.bytes = malloc(width * height * sizeof(color_t));
     if (Gx.bytes== nullptr) return;
     
     Gx.width = width;
     Gx.height = height;
-    setDRAM(Gx.bytes);
-    fillArea(0, 0, width, height, color);
-
+    RECT_P(Gx, 0, 0, width, height, color);
 }
 
 
@@ -52,7 +52,7 @@ void DIMGROB_P(GROB& Gx, int width, int height, BLOB& list) {
     if (list.size() == 0) return;
     
     if (width <= 0 && height <= 0) return;
-    Gx.bytes = malloc(width * height * 4);
+    Gx.bytes = malloc(width * height * sizeof(color_t));
     if (Gx.bytes == nullptr) return;
     
     unsigned long lengthInBytes = list.size() * 8;
@@ -64,10 +64,10 @@ void DIMGROB_P(GROB& Gx, int width, int height, BLOB& list) {
         uint16_t* src = (uint16_t *)list.data();
         
         for (int i = 0; i < list.size(); i++) {
-            *dest++ = convertHighColorToTrueColor(*src++);
-            *dest++ = convertHighColorToTrueColor(*src++);
-            *dest++ = convertHighColorToTrueColor(*src++);
-            *dest++ = convertHighColorToTrueColor(*src++);
+            *dest++ = invertAlphaChannel(convertHighColorToTrueColor(*src++));
+            *dest++ = invertAlphaChannel(convertHighColorToTrueColor(*src++));
+            *dest++ = invertAlphaChannel(convertHighColorToTrueColor(*src++));
+            *dest++ = invertAlphaChannel(convertHighColorToTrueColor(*src++));
         }
         
     }
@@ -77,8 +77,8 @@ void DIMGROB_P(GROB& Gx, int width, int height, BLOB& list) {
         uint32_t* src = (uint32_t *)list.data();
         
         for (int i = 0; i < list.size(); i++) {
-            *dest++ = *src++;
-            *dest++ = *src++;
+            *dest++ = invertAlphaChannel(*src++);
+            *dest++ = invertAlphaChannel(*src++);
         }
     }
     

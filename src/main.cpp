@@ -366,8 +366,11 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\b(sub|function) +)";
     ln = std::regex_replace(ln, re, "");
     
-    re = R"(\b(BLOB|LIST|DATA|integer|real)\b)";
+    re = R"(\b(BLOB|LIST|DATA|integer|real|U?Int\d{0,2}|Real)\b)";
     ln = std::regex_replace(ln, re, "LOCAL");
+    
+    re = R"(\( *LOCAL *\))";
+    ln = std::regex_replace(ln, re, "");
     
     re = R"(\bCONST +LOCAL\b)";
     ln = std::regex_replace(ln, re, "CONST");
@@ -378,7 +381,8 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\b(false|NO)\b)";
     ln = std::regex_replace(ln, re, "0");
     
-    
+    re = R"(\bSLEEP *;)";
+    ln = std::regex_replace(ln, re, "");
     
     
     re = R"(\[([^\[\]]+)\])";

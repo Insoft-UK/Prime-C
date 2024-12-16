@@ -1,49 +1,22 @@
 //#define MY_DEFINE "Copyright (c) 2023 Insoft. All rights reserved."
 
-real main()
+real START()
 begin
-    real index;
-    index[0] = 0;
+    BLOB blobA = {0x03E07C00007F7FE0,0x007F7FE003E07C00,0x7FFF00007FFF0000,0x00007FFF00007FFF};
 
-    integer array[2][2] = {1,2,{3,4}};
-    array[0][1] = 2;
+    RECT_P(G0, 0, 0, 320, 240, RGB(0, 0, 0, 0));
+    DIMGROB_P(G2, 4, 4, blobA);
+    BLIT_P(G0, 0, 0, 200, 200, G2, 0, 0, 4, 4);
 
-    for (i=0; i<5; i += 1) {
-        // for...loop
+    DIMGROB_P(G3, 1, 1, RGB(255, 255, 0));
+    BLIT_P(G0, 300, 0, 320, 200, G3, 0, 0, 4, 4);
+
+    while(true) {
+        SLEEP;
     }
-    if (index[0]==index[1] and index[0] <= 0) {
-        return 1;
-        otherwise
-        return 0;
-    }
-
-    integer counterA=400 + 2 * 100;
-    while (counterA > 0) {
-        counterA-=1;
-    }
-
-    integer counterB = 100;
-    repeat {
-        counterB -= 10;
-    } until(counterB <= 0);
-
-    const integer B = 2;
-
-    while (1) {
-        if (A == 0) {
-            A += 1;
-            break;
-        }
-    }
-
-    LOCAL A = 0;
-//    IF (A == 0) THEN
-//    ELSE
-//    }
-
-
 
     return 0;
 end
+
 
 
