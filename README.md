@@ -9,7 +9,9 @@ This experimental project is expected to undergo significant evolution as develo
 <br />
 <br />
 # UPDATE
-C like syntax with some PPL syntax, tho more like C than PPL even tho it can be written to resemble PPL syntax more and still compile into pure PPL by using some of the macros like `and` and `or`.
+C syntax with some PPL syntax via macros, tho it can be written to resemble PPL syntax more and still compile into pure PPL by using some of the macros like `and` and `or`.
+
+Not all of C fetures be supported such as pointers as PPL dosn't have pointers.  C casting is supported mainly so one can compile and test on macOS tho when compiled for PPL they simply removed as if were never typed.
 
 >[!WARNING]
 Experimental, not to be used for actual software development.
