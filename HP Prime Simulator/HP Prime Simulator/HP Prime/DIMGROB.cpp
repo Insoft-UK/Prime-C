@@ -77,8 +77,15 @@ void DIMGROB_P(GROB& Gx, int width, int height, BLOB& list) {
         uint32_t* src = (uint32_t *)list.data();
         
         for (int i = 0; i < list.size(); i++) {
-            *dest++ = invertAlphaChannel(*src++);
-            *dest++ = invertAlphaChannel(*src++);
+            color_t argb;
+            
+            argb = *src++;
+            argb = (argb & 0xFF) << 16 | (argb & 0xFF0000) >> 16 | (argb & 0xFF00FF00);
+            *dest++ = invertAlphaChannel(argb);
+            
+            argb = *src++;
+            argb = (argb & 0xFF) << 16 | (argb & 0xFF0000) >> 16 | (argb & 0xFF00FF00);
+            *dest++ = invertAlphaChannel(argb);
         }
     }
     

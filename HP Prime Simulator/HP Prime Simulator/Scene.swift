@@ -32,6 +32,16 @@ class Scene: SKScene {
     let height = 240
     let bytesPerPixel = 4
     
+//    class HpprgmThread: Thread {
+//        override func main() { // Thread's starting point
+//            CppBridge.hpprgm()
+//        }
+//    }
+//
+//    let thread = HpprgmThread()
+    
+    
+    
     override func didMove(to view: SKView) {
         mutableTexture = SKMutableTexture(size: CGSize(width: width, height: height))
         sprite = SKSpriteNode(color: .red, size: CGSize(width: width, height: height))
@@ -41,6 +51,8 @@ class Scene: SKScene {
         sprite?.position.y = CGFloat(height);
         addChild(sprite!)
     }
+    
+    
     
     // MARK: - Keyboard Events
     override func keyDown(with event: NSEvent) {

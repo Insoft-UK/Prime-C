@@ -33,13 +33,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         CppBridge.initHPPrime()
         
-        let newThread = Thread {
-            // Code to run in the new thread
+        DispatchQueue.global(qos: .background).async {
             CppBridge.hpprgm()
         }
-
-        // Start the thread
-        newThread.start()
+        
+//                DispatchQueue.global(qos: .userInteractive).async {
+//                    while true {
+//                        CppBridge.hpprgm()
+//                            Thread.sleep(forTimeInterval: 1.0 / 60);
+//                    }
+//                }
+        
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
