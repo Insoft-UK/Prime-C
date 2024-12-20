@@ -42,7 +42,7 @@
 #include "strings.hpp"
 #include "calc.hpp"
 
-#include "build.h"
+#include "version_code.h"
 
 #define NAME "Prime-C Compiler"
 
@@ -102,12 +102,6 @@ static std::string decimalToBase24(long num) {
     return base24;
 }
 
-static std::string getBuildCode(void) {
-    std::string str;
-    int majorVersionNumber = BUILD_NUMBER / 100000;
-    str = std::to_string(majorVersionNumber) + decimalToBase24(BUILD_NUMBER - majorVersionNumber * 100000);
-    return str;
-}
 
 uint32_t utf8_to_utf16(const char *str) {
     uint8_t *utf8 = (uint8_t *)str;
@@ -562,6 +556,59 @@ void writeUTF16(const std::string& str, std::ofstream& outfile) {
     }
 }
 
+bool isMultilineComment(const std::string str) {
+    std::regex re(R"(^ *\/*)");
+    return std::regex_search(str, re);
+}
+
+bool isPythonBlock(const std::string str) {
+    std::regex re(R"(^ *# *PYTHON *(\/\/.*)?$)");
+    return std::regex_search(str, re);
+}
+
+bool isPPLBlock(const std::string str) {
+    std::regex re(R"(^ *# *PPL *(\/\/.*)?$)");
+    return std::regex_search(str, re);
+}
+
+void writePPLBlock(std::ifstream& infile, std::ofstream& outfile) {
+    std::regex re(R"(^ *# *(END) *(?:\/\/.*)?$)");
+    std::string str;
+    
+    Singleton::shared()->incrementLineNumber();
+    
+    while(getline(infile, str)) {
+        if (std::regex_search(str, re)) {
+            Singleton::shared()->incrementLineNumber();
+            return;
+        }
+        
+        str.append("\n");
+        writeUTF16Line(str, outfile);
+        Singleton::shared()->incrementLineNumber();
+    }
+}
+
+void writePythonBlock(std::ifstream& infile, std::ofstream& outfile) {
+    std::regex re(R"(^ *# *(END) *(?:\/\/.*)?$)");
+    std::string str;
+    
+    writeUTF16Line("#PYTHON\n", outfile);
+    Singleton::shared()->incrementLineNumber();
+    
+    while(getline(infile, str)) {
+        if (std::regex_search(str, re)) {
+            writeUTF16Line("#END\n", outfile);
+            Singleton::shared()->incrementLineNumber();
+            return;
+        }
+        
+        str.append("\n");
+        writeUTF16Line(str, outfile);
+        Singleton::shared()->incrementLineNumber();
+    }
+}
+
 bool isBlockCommentStart(const std::string str) {
     std::regex re(R"(^ *\/\* *)");
     return std::regex_search(str, re);
@@ -612,6 +659,16 @@ void translatePrimeCToPPL(const std::string& pathname, std::ofstream& outfile)
     if (!infile.is_open()) exit(2);
     
     while(getline(infile, utf8)) {
+        if (isPythonBlock(utf8)) {
+            writePythonBlock(infile, outfile);
+            continue;
+        }
+        
+        if (isPPLBlock(utf8)) {
+            writePPLBlock(infile, outfile);
+            continue;
+        }
+        
         // Convert any `/* comment */` to `// comment`
         re = R"(\/\*(.*)(?:(\*\/)))";
         utf8 = regex_replace(utf8, re, "//$1\n");
@@ -645,10 +702,9 @@ void translatePrimeCToPPL(const std::string& pathname, std::ofstream& outfile)
 
 // MARK: - Command Line
 void version(void) {
-    std::cout << "Copyright (C) 2023-" << BUILD_DATE / 10000 << " Insoft. All rights reserved.\n";
-    std::cout << "Insoft " << NAME << " version, " << BUILD_NUMBER / 100000 << "." << BUILD_NUMBER / 10000 % 10 << "." << BUILD_NUMBER / 1000 % 10
-    << " (BUILD " << getBuildCode() << ")\n";
-    std::cout << "Built on: " << CURRENT_DATE << "\n";
+    std::cout << "Copyright (C) 2023-" << YEAR << " Insoft. All rights reserved.\n";
+    std::cout << "Insoft " << NAME << " version, " << VERSION_NUMBER << " (BUILD " << VERSION_CODE << ")\n";
+    std::cout << "Built on: " << DATE << "\n";
     std::cout << "Licence: MIT License\n\n";
     std::cout << "For more information, visit: http://www.insoft.uk\n";
 }
@@ -659,18 +715,13 @@ void error(void) {
 }
 
 void info(void) {
-    std::cout << "Copyright (c) 2023-" << BUILD_DATE / 10000 << " Insoft. All rights reserved.\n";
-    int rev = BUILD_NUMBER / 1000 % 10;
-    std::cout << "Insoft " << NAME << " version, " << BUILD_NUMBER / 100000 << "." << BUILD_NUMBER / 10000 % 10 << (rev ? "." + std::to_string(rev) : "")
-    << " (BUILD " << getBuildCode() << "-" << decimalToBase24(BUILD_DATE) << ")\n\n";
+    std::cout << "Copyright (c) 2023-" << YEAR << " Insoft. All rights reserved.\n";
+    std::cout << "Insoft " << NAME << " version, " << VERSION_NUMBER << " (BUILD " << VERSION_CODE << ")\n\n";
 }
 
 void help(void) {
-    int rev = BUILD_NUMBER / 1000 % 10;
-    
-    std::cout << "Copyright (C) 2023-" << BUILD_DATE / 10000 << " Insoft. All rights reserved.\n";
-    std::cout << "Insoft " << NAME << " version, " << BUILD_NUMBER / 100000 << "." << BUILD_NUMBER / 10000 % 10 << (rev ? "." + std::to_string(rev) : "")
-    << " (BUILD " << getBuildCode() << "-" << decimalToBase24(BUILD_DATE) << ")\n";
+    std::cout << "Copyright (C) 2023-" << YEAR << " Insoft. All rights reserved.\n";
+    std::cout << "Insoft " << NAME << " version, " << VERSION_NUMBER << " (BUILD " << VERSION_CODE << ")\n";
     std::cout << "\n";
     std::cout << "Usage: " << _basename << " <input-file> [-o <output-file>] [-b <flags>] [-l <pathname>]\n";
     std::cout << "\n";
@@ -797,8 +848,6 @@ int main(int argc, char **argv) {
     str = "#define __SCREEN_HEIGHT 240";
     preprocessor.parse(str);
     str = R"(#define __LIST_LIMIT 10000)";
-    preprocessor.parse(str);
-    str = R"(#define __VERSION )" + std::to_string(BUILD_NUMBER / 100000) + std::to_string(BUILD_NUMBER / 10000 % 10) + std::to_string(BUILD_NUMBER / 1000 % 10);
     preprocessor.parse(str);
     
     

@@ -100,6 +100,28 @@ extern "C" {
      @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
     void fillRect(int x, int y, short w, short h, color_t color);
+    
+    /**
+     @brief    Draw a rounded rectangle with no fill color
+     @param    x   Top left corner x coordinate
+     @param    y   Top left corner y coordinate
+     @param    w   Width in pixels
+     @param    h   Height in pixels
+     @param    r   Radius of corner rounding
+     @param    color Specifies what color to draw with. It is in  color index format.
+     */
+    void drawRoundRect(int x, int y, int w, int h, short r, color_t color);
+
+    /**
+     @brief    Draw a rounded rectangle with fill color
+     @param    x   Top left corner x coordinate
+     @param    y   Top left corner y coordinate
+     @param    w   Width in pixels
+     @param    h   Height in pixels
+     @param    r   Radius of corner rounding
+     @param    color Specifies what color to draw with. It is in  color index format.
+     */
+    void fillRoundRect(int x, int y, int w, int h, short r, color_t color);
 
     /**
      @brief    Draw a circle outline.

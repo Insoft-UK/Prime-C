@@ -148,7 +148,7 @@ static void swap(int *x, int *y) {
  @param    b  Blue channel
  */
 color_t rgb(unsigned char r, unsigned char g, unsigned char b) {
-    return (color_t)r | (color_t)g << 8 | (color_t)b << 16;
+    return (color_t)r | (color_t)g << 8 | (color_t)b << 16 | 0xFF000000;
 }
 
 /**
@@ -516,6 +516,44 @@ void fillArea(unsigned x, unsigned y, unsigned w, unsigned h, color_t color) {
         }
         DRAM += LCD_WIDTH_PX - w;
     }
+}
+
+void drawRoundRect(int x, int y, int w, int h, short r, color_t color)
+{
+    int max_radius = ((w < h) ? w : h) / 2; // 1/2 minor axis
+    if (r > max_radius)
+        r = max_radius;
+    // smarter version
+  
+    drawFastHLine(x + r, y, w - 2 * r, color);         // Top
+    drawFastHLine(x + r, y + h - 1, w - 2 * r, color); // Bottom
+    drawFastVLine(x, y + r, h - 2 * r, color);         // Left
+    drawFastVLine(x + w - 1, y + r, h - 2 * r, color); // Right
+    // draw four corners
+    drawCircleHelper(x + r, y + r, r, 1, color);
+    drawCircleHelper(x + w - r - 1, y + r, r, 2, color);
+    drawCircleHelper(x + w - r - 1, y + h - r - 1, r, 4, color);
+    drawCircleHelper(x + r, y + h - r - 1, r, 8, color);
+}
+
+/**
+ @brief    Draw a rounded rectangle with fill color
+ @param    x   Top left corner x coordinate
+ @param    y   Top left corner y coordinate
+ @param    w   Width in pixels
+ @param    h   Height in pixels
+ @param    r   Radius of corner rounding
+ @param    color Specifies what color to draw with. It is in RGB 565 format.
+ */
+void fillRoundRect(int x, int y, int w, int h, short r, color_t color)
+{
+    int max_radius = ((w < h) ? w : h) / 2; // 1/2 minor axis
+    if (r > max_radius)
+        r = max_radius;
+  
+    fillArea(x + r, y, w - 2 * r, h, color);
+    fillCircleHelper(x + w - r - 1, y + r, r, 1, h - 2 * r - 1, color);
+    fillCircleHelper(x + r, y + r, r, 2, h - 2 * r - 1, color);
 }
 
 /**

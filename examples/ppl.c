@@ -11,10 +11,14 @@ begin
     DIMGROB_P(G3, 1, 1, RGB(255, 255, 0));
     BLIT_P(G0, 300, 0, 320, 200, G3, 0, 0, 4, 4);
 
+Int l;
+l = IP((Real)i * 0.6);
+
+#PPL
     while(true) {
         SLEEP;
     }
-
+#END
     return 0;
 end
 
