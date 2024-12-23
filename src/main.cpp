@@ -249,10 +249,9 @@ void reformatPPLLine(std::string& str) {
 
 void capitalizePPLKeywords(std::string& str) {
     std::string result = str;
-    std::regex re;
+    std::regex re(R"(\b(begin|end|return|kill|if|then|else|xor|or|and|not|case|default|iferr|ifte|for|from|step|downto|to|do|while|repeat|until|break|continue|export|const|local|key)\b)", std::regex_constants::icase);
     
     // We turn any keywords that are in lowercase to uppercase
-    re = R"(\b(begin|end|return|kill|if|then|else|xor|or|and|not|case|default|iferr|ifte|for|from|step|downto|to|do|while|repeat|until|break|continue|export|const|local|key)\b)";
     for(std::sregex_iterator it = std::sregex_iterator(str.begin(), str.end(), re); it != std::sregex_iterator(); ++it) {
         std::string result = it->str();
         std::transform(result.begin(), result.end(), result.begin(), ::toupper);
@@ -348,6 +347,9 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     
     capitalizePPLKeywords(ln);
     
+    Alias::parse(ln);
+    ln = singleton->aliases.resolveAllAliasesInText(ln);
+    
     re = R"(0x([\dA-F]+))";
     ln = std::regex_replace(ln, re, "#$1:64h");
     
@@ -360,8 +362,11 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\b(sub|function) +)";
     ln = std::regex_replace(ln, re, "");
     
-    re = R"(\b(BLOB|LIST|DATA|integer|real|U?Int\d{0,2}|Real)\b)";
+    re = R"(\b(List|U?Int\d{0,2}|Float(?:32|64))\b)";
     ln = std::regex_replace(ln, re, "LOCAL");
+    
+    re = R"(\bLOCAL<LOCAL> ([A-Za-z]\w*)\((\d+)\))";
+    ln = std::regex_replace(ln, re, "LOCAL $1:=MAKELIST(0,1,$2)");
     
     re = R"(\( *LOCAL *\))";
     ln = std::regex_replace(ln, re, "");
@@ -369,10 +374,10 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\bCONST +LOCAL\b)";
     ln = std::regex_replace(ln, re, "CONST");
     
-    re = R"(\b(true|YES)\b)";
+    re = R"(\btrue\b)";
     ln = std::regex_replace(ln, re, "1");
     
-    re = R"(\b(false|NO)\b)";
+    re = R"(\bfalse\b)";
     ln = std::regex_replace(ln, re, "0");
     
     re = R"(\bSLEEP *;)";
@@ -401,6 +406,13 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     ln = regex_replace(ln, re, "ELSE");
     
     
+    // Scope
+    
+    re = R"(^\{ *$)";
+    ln = regex_replace(ln, re, "BEGIN");
+    
+    re = R"(^\} *$)";
+    ln = regex_replace(ln, re, "END");
     
     re = R"((?:(?:\)|REPEAT|CASE) *\{|^ *BEGIN) *$)";
     if (std::regex_search(ln, re)) {
@@ -424,10 +436,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         
         singleton->setNestingLevel(singleton->nestingLevel - 1);
     }
-    
-    Alias::parse(ln);
-    ln = singleton->aliases.resolveAllAliasesInText(ln);
-    
     
     
     // PPL uses := instead of C's = for assignment. Converting all = to PPL style :=
@@ -516,6 +524,24 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
             ln = ln.replace(match.position(1), match.length(1), ppl);
         }
     }
+    
+    re = R"(\<([A-Za-z]\w*)\>)";
+    ln = regex_replace(ln, re, "");
+    
+    re = R"(\b([A-Za-z]\w*)\.push_back\((.*)\))";
+    ln = regex_replace(ln, re, "CONCAT($1,$2)▶$1");
+    
+    re = R"(\b([A-Za-z]\w*)\.front\(\))";
+    ln = regex_replace(ln, re, "$1(1)");
+    
+    re = R"(\b([A-Za-z]\w*)\.back\(\))";
+    ln = regex_replace(ln, re, "$1(length($1))");
+    
+    re = R"(\b([A-Za-z]\w*)\.length\(\))";
+    ln = regex_replace(ln, re, "length($1)");
+    
+    re = R"(\b([A-Za-z]\w*)\.at\((\d+)\))";
+    ln = regex_replace(ln, re, "$1($2)");
     
     strings.restoreStrings(ln);
     reformatPPLLine(ln);

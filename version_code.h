@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 // 
-// Copyright (c) 2023 Insoft. All rights reserved.
+// Copyright (c) 2024 Insoft. All rights reserved.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the Software), to deal
@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #define VERSION_NUMBER        "1.0.0"
-#define VERSION_CODE          "A0A44-24LJ"
-#define NUMERIC_BUILD          10044
-#define INTERNAL_BUILD_CODE   "A0A44"
-#define DATE                  "2024 December 20"
+#define VERSION_CODE          "A0A80-24LM"
+#define NUMERIC_BUILD          10080
+#define INTERNAL_BUILD_CODE   "A0A80"
+#define DATE                  "2024 December 23"
 #define YEAR                  "2024"

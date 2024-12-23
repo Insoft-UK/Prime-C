@@ -27,6 +27,25 @@
 
 #include "display.h"
 
+typedef uint32_t TColor;
+
+typedef struct {
+    uint16_t offset;   // Offset address to the bitmap data for this glypth.
+    uint8_t  width;    // Bitmap dimensions in pixels.
+    uint8_t  height;   // Bitmap dimensions in pixels.
+    uint8_t  xAdvance; // Distance to advance cursor in the x-axis.
+    int8_t   xOff;     // Used to position the glyph within the cell in the horizontal direction.
+    int8_t   base;     // Distance from the baseline of the character to the top of the glyph.
+} TGlyph;
+
+typedef struct {
+    uint8_t*   bitmap;   // Bitmap data array.
+    TGlyph*    glyph;    // Glyph data.
+    uint8_t    first;    // The first ASCII value of your first character.
+    uint8_t    last;     // The last ASCII value of your last character.
+    uint8_t    yAdvance; // Newline distance in the y-axis.
+} TFont;
+
 
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
@@ -48,7 +67,7 @@ extern "C" {
      @returns  An 32-bit unsigned integer number that can be used as
                the color parameter for a drawing function.
      */
-    color_t convertHighColorToTrueColor(uint16_t color);
+    TColor convertHighColorToTrueColor(uint16_t color);
     
     /**
     @brief    Inverts the alpha channel of a given color in RGBA 8888 format.
@@ -69,7 +88,7 @@ extern "C" {
      @param    g  Green channel
      @param    b  Blue channel
      */
-    color_t rgb(unsigned char r, unsigned char g, unsigned char b);
+    TColor rgb(unsigned char r, unsigned char g, unsigned char b);
 
     /**
      @brief    Write a line.  Bresenham's algorithm
@@ -79,7 +98,7 @@ extern "C" {
      @param    y2  End point y coordinate
      @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888 format.
      */
-    void drawLine(int x1, int y1, int x2, int y2, color_t color);
+    void drawLine(int x1, int y1, int x2, int y2, TColor color);
 
     /**
      @brief    Draw a rectangle with no fill color
@@ -89,7 +108,7 @@ extern "C" {
      @param    h   Height in pixels
      @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
-    void drawRect(int x, int y, short w, short h, color_t color);
+    void drawRect(int x, int y, short w, short h, TColor color);
     
     /**
      @brief    Draw a rectangle with filled color
@@ -99,7 +118,7 @@ extern "C" {
      @param    h   Height in pixels
      @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
-    void fillRect(int x, int y, short w, short h, color_t color);
+    void fillRect(int x, int y, short w, short h, TColor color);
     
     /**
      @brief    Draw a rounded rectangle with no fill color
@@ -110,7 +129,7 @@ extern "C" {
      @param    r   Radius of corner rounding
      @param    color Specifies what color to draw with. It is in  color index format.
      */
-    void drawRoundRect(int x, int y, int w, int h, short r, color_t color);
+    void drawRoundRect(int x, int y, int w, int h, short r, TColor color);
 
     /**
      @brief    Draw a rounded rectangle with fill color
@@ -121,7 +140,7 @@ extern "C" {
      @param    r   Radius of corner rounding
      @param    color Specifies what color to draw with. It is in  color index format.
      */
-    void fillRoundRect(int x, int y, int w, int h, short r, color_t color);
+    void fillRoundRect(int x, int y, int w, int h, short r, TColor color);
 
     /**
      @brief    Draw a circle outline.
@@ -130,7 +149,7 @@ extern "C" {
      @param    r   Radius of circle.
      @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
-    void drawCircle(int x, int y, short r, color_t color);
+    void drawCircle(int x, int y, short r, TColor color);
 
     
     /**
@@ -139,7 +158,7 @@ extern "C" {
      @param    y   Center-point y coordinate
      @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
-    void fillCircle(int x, int y, short r, color_t color);
+    void fillCircle(int x, int y, short r, TColor color);
 
     /**
      @brief    Draw a triangle with no fill color
@@ -163,7 +182,7 @@ extern "C" {
      @param    y3  Vertex #3 y coordinate
      @param    color Specifies what color to draw with. It is in RGBA 8888 format.
      */
-    void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
+    void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, TColor color);
 
     /**
      @brief    Creates a RGBA 8888 format color on a grey value.
@@ -179,7 +198,7 @@ extern "C" {
      @param    h   Height of the filled rectangle.
      @param    color Color of the filled rectangle.
      */
-    void fillArea(unsigned x, unsigned y, unsigned w, unsigned h, color_t color);
+    void fillArea(unsigned x, unsigned y, unsigned w, unsigned h, TColor color);
 
     /**
     @brief    Plots a single pixel at the specified (x, y) coordinates.
@@ -187,9 +206,20 @@ extern "C" {
     @param    y   Specifies the y coordinate of the pixel.
     @param    color  Specifies the color of the pixel. It is in RGBA 8888 format.
     */
-    void plot(unsigned x, unsigned y, color_t color);
+    void plot(unsigned x, unsigned y, TColor color);
     
     void drawBitmapScaled(int dx, int dy, int width, int height, float scale_x, float scale_y, const void* data);
+    
+    
+    /**
+     @brief    Draw a string of text.
+     @param    x   Top left corner x coordinate
+     @param    y   Top left corner y coordinate
+     @param    str  String to draw
+     @param    color Specifies what color the string of text will be. It is in  color index format.
+     @param    font  The font to be used.
+     */
+    int drawString(int16_t x, int16_t y, const char *str, TColor color, TFont font);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

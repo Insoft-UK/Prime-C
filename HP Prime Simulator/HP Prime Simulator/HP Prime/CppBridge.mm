@@ -28,7 +28,7 @@ extern double START();
 }
 
 + (void)initHPPrime {
-    memset(displayRAM(), 255, 320 * 240 * 4);
+    memset(getDisplayBufferAddress(), 255, 320 * 240 * 4);
 }
 
 + (double)hpprgm {

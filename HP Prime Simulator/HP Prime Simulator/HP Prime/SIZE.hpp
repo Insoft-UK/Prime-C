@@ -22,20 +22,9 @@
  SOFTWARE.
  */
 
-#include "prime.hpp"
+#ifndef SIZE_hpp
+#define SIZE_hpp
 
-TYPE A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z;
+#define SIZE(list)   list.size()
 
-List<TYPE> L1(__LIST_LIMIT);
-List<TYPE> L2(__LIST_LIMIT);
-List<TYPE> L3(__LIST_LIMIT);
-List<TYPE> L4(__LIST_LIMIT);
-List<TYPE> L5(__LIST_LIMIT);
-List<TYPE> L6(__LIST_LIMIT);
-List<TYPE> L7(__LIST_LIMIT);
-List<TYPE> L8(__LIST_LIMIT);
-List<TYPE> L9(__LIST_LIMIT);
-
-
-
-
+#endif /* SIZE_hpp */

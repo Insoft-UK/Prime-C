@@ -32,23 +32,16 @@ class Scene: SKScene {
     let height = 240
     let bytesPerPixel = 4
     
-//    class HpprgmThread: Thread {
-//        override func main() { // Thread's starting point
-//            CppBridge.hpprgm()
-//        }
-//    }
-//
-//    let thread = HpprgmThread()
-    
-    
     
     override func didMove(to view: SKView) {
+        backgroundColor = .black
         mutableTexture = SKMutableTexture(size: CGSize(width: width, height: height))
         sprite = SKSpriteNode(color: .red, size: CGSize(width: width, height: height))
         sprite?.texture = mutableTexture;
         sprite?.anchorPoint = .zero;
         sprite?.yScale = -1;
-        sprite?.position.y = CGFloat(height);
+        sprite?.position.y = CGFloat(height) + 10;
+        sprite?.position.x = 10
         addChild(sprite!)
     }
     
@@ -80,7 +73,7 @@ class Scene: SKScene {
 
     override func update(_ currentTime: TimeInterval) {
         mutableTexture?.modifyPixelData({ pixelData, lengthInBytes in
-            pixelData?.copyMemory(from: displayRAM(), byteCount: lengthInBytes)
+            pixelData?.copyMemory(from: getDisplayBufferAddress(), byteCount: lengthInBytes)
         })
     }
 }

@@ -25,36 +25,33 @@
 
 #include "prime.hpp"
 
+
+
 Int START()
-begin
-    BLOB blobA = {0x03E07C00007F7FE0,0x007F7FE003E07C00,0x7FFF00007FFF0000,0x00007FFF00007FFF};
-    BLOB blobB = {0x0000FF0000FF0000,0x00FFFFFF000000FF};
-
-//    RECT_P(G0, 0, 0, 320, 240, RGB(0, 0, 0));
-
+{
+    List<Int64> blobA = {0x03E07C00007F7FE0,0x007F7FE003E07C00,0x7FFF00007FFF0000,0x00007FFF00007FFF};
+    
+    RECT_P(G0, 0, 0, 320, 240, RGB(0, 0, 0, 0));
     DIMGROB_P(G2, 4, 4, blobA);
-//    BLIT_P(G0, 0, 0, 200, 200, G2, 0, 0, 4, 4);
-
-    DIMGROB_P(G3, 4, 1, blobB);
-//    BLIT_P(G0, 0, 0, 200, 200, G3);
-
-for (Int i = 0; i < 20; i += 1) {
-    Int l = IP(2.5 * (Float)i) + 31;
-    drawLine(0, 220 + i, 320, 220 + i, rgb(l, l, l));
-}
-drawRoundRect(0, 220, 52, 20, 4, rgb(0,0,0));
-drawRect(53, 220, 52, 20, rgb(0,0,0));
-drawRect(106, 220, 52, 20, rgb(0,0,0));
-drawRect(159, 220, 52, 20, rgb(0,0,0));
-drawRect(212, 220, 52, 20, rgb(0,0,0));
-drawRect(265, 220, 55, 20, rgb(0,0,0));
-
-drawLine(52, 220, 52, 239, rgb(255,255,255));
-
-
+    BLIT_P(G0, 0, 0, 200, 200, G2, 0, 0, 4, 4);
+    
+    DIMGROB_P(G3, 1, 1, RGB(255, 255, 0));
+    BLIT_P(G0, 300, 0, 320, 200, G3, 0, 0, 4, 4);
+    
+    Int l;
+    List<Int64> grayscale(__LIST_LIMIT);
+    for (l = 0; l < 256; l += 2) {
+        grayscale[l] = RGB(l, l, l);
+        grayscale[l + 1] = RGB(l + 1, l + 1, l + 1);
+    }
+    
+    DIMGROB_P(G4, 256, 1, grayscale);
+    BLIT_P(G0, 0, 0, 256, 256, G4, 0, 0, 256, 1);
+    
+    
     while(true) {
         SLEEP;
     }
-
+    
     return 0;
-end
+}

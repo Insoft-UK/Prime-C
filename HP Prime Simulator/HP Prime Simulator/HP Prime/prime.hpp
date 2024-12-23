@@ -27,29 +27,25 @@
 
 #ifdef __clang__
 
+
 #include <vector>
 #include <chrono>
 #include <thread>
 
+using namespace std;
+
 #define __SCREEN G0
 #define __SCREEN_WIDTH 320
 #define __SCREEN_HEIGHT 240
-
-#define begin       {
-#define end         }
+#define __LIST_LIMIT 10000
 
 #define BEGIN       {
 #define END         }
 
-#ifndef __cplusplus
-#define and         &&
-#define or          ||
 #define AND         &&
 #define OR          ||
-#endif
 
-#define repeat      do
-#define REPEAT      do
+#define REPEAT      do {
 #define until(condition) while (!(condition))
 #define UNTIL(condition) while (!(condition))
 #define sub         void
@@ -60,13 +56,12 @@
 #define ELSE        } else {
 #define WHILE       while
 
-#define integer     int64_t
-#define real        double
+
 #define IP(n)       ((int64_t)n)
 #define LOCAL       int64_t
 #define CONST       const
-#define Int         int
-#define Float       float
+
+
 
 #define SLEEP std::this_thread::sleep_for(std::chrono::seconds(1))
 
@@ -78,11 +73,32 @@
 #define BITSR(a,n)  ((int64_t)a>>(int64_t)n)
 #define BITXOR(a,b) ((int64_t)a^(int64_t)b)
 
-typedef std::vector<uint64_t> BLOB;
-typedef std::vector<int64_t> DATA;
-typedef std::vector<double> LIST;
 
-#define SIZE(obj)   obj.size()
+#define List        std::vector
+
+typedef int Int;
+typedef int Int32;
+typedef long Int64;
+
+typedef float Float;
+typedef float Float32;
+typedef double Float64;
+
+#ifndef TYPE
+#define TYPE Float64
+#endif
+
+extern TYPE A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z;
+
+extern List<TYPE> L1;
+extern List<TYPE> L2;
+extern List<TYPE> L3;
+extern List<TYPE> L4;
+extern List<TYPE> L5;
+extern List<TYPE> L6;
+extern List<TYPE> L7;
+extern List<TYPE> L8;
+extern List<TYPE> L9;
 
 #include "GROB.hpp"
 
@@ -91,6 +107,19 @@ typedef std::vector<double> LIST;
 #include "PIXON.hpp"
 #include "DIMGROB.hpp"
 #include "BLIT.hpp"
+#include "SIZE.hpp"
+
+/* Set up for C function definitions, even when using C++ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
+    void setMouseState(int state);
+    
+/* Ends C function definitions when using C++ */
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

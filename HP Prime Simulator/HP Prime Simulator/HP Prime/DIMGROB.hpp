@@ -30,6 +30,6 @@
 
 
 void DIMGROB_P(GROB& Gx, int width, int height, color_t color = 0xFFFFFF);
-void DIMGROB_P(GROB& Gx, int width, int height, BLOB& list);
+void DIMGROB_P(GROB& Gx, int width, int height, List<Int64>& list);
 
 #endif /* DIMGROB_hpp */

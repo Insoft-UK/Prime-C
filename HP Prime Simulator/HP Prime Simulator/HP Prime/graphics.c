@@ -29,7 +29,7 @@ static void* _DRAM = NULL;
 
 void setDRAM(void* address) {
     if (address == NULL) {
-        _DRAM = displayRAM();
+        _DRAM = getDisplayBufferAddress();
         return;
     }
     _DRAM = address;
@@ -37,7 +37,7 @@ void setDRAM(void* address) {
 
 static void* getDRAM(void) {
     if (_DRAM == NULL) {
-        return displayRAM();
+        return getDisplayBufferAddress();
     }
     return _DRAM;
 }
@@ -52,7 +52,7 @@ static void* getDRAM(void) {
  @returns  An 32-bit unsigned integer number that can be used as
            the color parameter for a drawing function.
  */
-color_t convertHighColorToTrueColor(uint16_t color) {
+TColor convertHighColorToTrueColor(uint16_t color) {
     uint32_t r, g, b, a;
     
     r = (color & 0b111110000000000) >> 7;
@@ -61,12 +61,12 @@ color_t convertHighColorToTrueColor(uint16_t color) {
     a = color & 0x8000 ? 255 : 0;
     
 #ifdef __LITTLE_ENDIAN__
-    color_t rgba = r | g << 8 | b << 16 | a << 24;
+    TColor rgba = r | g << 8 | b << 16 | a << 24;
     rgba |= (rgba & 0b000010000000100000001000) >> 3;
     rgba |= (rgba & 0b001000000010000000100000) >> 4;
     rgba |= (rgba & 0b100000001000000010000000) >> 5;
 #else
-    color_t rgba = r << 24 | g << 16 | b << 8 | a;
+    TColor rgba = r << 24 | g << 16 | b << 8 | a;
     rgba |= (rgba & 0b00001000000010000000100000000000) >> 3;
     rgba |= (rgba & 0b00100000001000000010000000000000) >> 4;
     rgba |= (rgba & 0b10000000100000001000000000000000) >> 5;
@@ -111,7 +111,7 @@ uint32_t invertAlphaChannel(uint32_t rgba) {
  @param    w   Width in pixels
  @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888  format.
  */
-static void drawFastHLine(unsigned x, unsigned y, unsigned w, color_t color) {
+static void drawFastHLine(unsigned x, unsigned y, unsigned w, TColor color) {
     if (y > LCD_HEIGHT_PX - 1) return;
     while (w--) {
         plot(x++, y, color);
@@ -126,7 +126,7 @@ static void drawFastHLine(unsigned x, unsigned y, unsigned w, color_t color) {
  @param    h   Height in pixels
  @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888 format.
  */
-static void drawFastVLine(unsigned x, unsigned y, unsigned h, color_t color) {
+static void drawFastVLine(unsigned x, unsigned y, unsigned h, TColor color) {
     if (x > LCD_WIDTH_PX - 1) return;
     while (h--) {
         plot(x, y++, color);
@@ -147,8 +147,8 @@ static void swap(int *x, int *y) {
  @param    g  Green channel
  @param    b  Blue channel
  */
-color_t rgb(unsigned char r, unsigned char g, unsigned char b) {
-    return (color_t)r | (color_t)g << 8 | (color_t)b << 16 | 0xFF000000;
+TColor rgb(unsigned char r, unsigned char g, unsigned char b) {
+    return (TColor)r | (TColor)g << 8 | (TColor)b << 16 | 0xFF000000;
 }
 
 /**
@@ -159,7 +159,7 @@ color_t rgb(unsigned char r, unsigned char g, unsigned char b) {
  @param    y2  End point y coordinate
  @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888 format.
  */
-void drawLine(int x1, int y1, int x2, int y2, color_t color) {
+void drawLine(int x1, int y1, int x2, int y2, TColor color) {
     if (x1 == x2) {
         if (y1 > y2)
             swap(&y1, &y2);
@@ -228,7 +228,7 @@ void drawLine(int x1, int y1, int x2, int y2, color_t color) {
 }
 
 
-void drawRect(int x, int y, short w, short h, color_t color) {
+void drawRect(int x, int y, short w, short h, TColor color) {
     drawFastHLine(x, y, w, color);
     drawFastHLine(x, y + h - 1, w, color);
     drawFastVLine(x, y, h, color);
@@ -236,7 +236,7 @@ void drawRect(int x, int y, short w, short h, color_t color) {
 }
 
 
-void fillRect(int x, int y, short w, short h, color_t color) {
+void fillRect(int x, int y, short w, short h, TColor color) {
     while (h-- > 0) {
         if (y >= LCD_HEIGHT_PX) break;
         if (y < 0) continue;
@@ -252,7 +252,7 @@ void fillRect(int x, int y, short w, short h, color_t color) {
  @param    cornername  Mask bit #1 or bit #2 to indicate which quarters of the circle we're doing.
  @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
-static void drawCircleHelper(int x, int y, short r, unsigned char cornername, color_t color) {
+static void drawCircleHelper(int x, int y, short r, unsigned char cornername, TColor color) {
     short f = 1 - r;
     short ddF_x = 1;
     short ddF_y = -2 * r;
@@ -294,7 +294,7 @@ static void drawCircleHelper(int x, int y, short r, unsigned char cornername, co
  @param    r   Radius of circle.
  @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
-void drawCircle(int x, int y, short r, color_t color) {
+void drawCircle(int x, int y, short r, TColor color) {
     short f = 1 - r;
     short ddF_x = 1;
     short ddF_y = -2 * r;
@@ -336,7 +336,7 @@ void drawCircle(int x, int y, short r, color_t color) {
  @param    delta    Offset from center-point, used for round-rects.
  @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
-static void fillCircleHelper(int x, int y, short r, unsigned char corners, short delta, color_t color) {
+static void fillCircleHelper(int x, int y, short r, unsigned char corners, short delta, TColor color) {
     short f = 1 - r;
     short ddF_x = 1;
     short ddF_y = -2 * r;
@@ -381,7 +381,7 @@ static void fillCircleHelper(int x, int y, short r, unsigned char corners, short
  @param    y   Center-point y coordinate
  @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
-void fillCircle(int x, int y, short r, color_t color) {
+void fillCircle(int x, int y, short r, TColor color) {
     drawFastVLine(x, y - r, 2 * r + 1, color);
     fillCircleHelper(x, y, r, 3, 0, color);
 }
@@ -412,7 +412,7 @@ void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, unsigned char 
  @param    y3  Vertex #3 y coordinate
  @param    color Specifies what color to draw with. It is in RGBA 8888 format.
  */
-void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
+void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, TColor color) {
     
     int a, b, y, last;
     
@@ -505,9 +505,9 @@ unsigned short makeGray(int shade) {
  @param    h   Height of the filled rectangle.
  @param    color Color of the filled rectangle.
  */
-void fillArea(unsigned x, unsigned y, unsigned w, unsigned h, color_t color) {
+void fillArea(unsigned x, unsigned y, unsigned w, unsigned h, TColor color) {
     if (x > LCD_WIDTH_PX - 1 || y > LCD_HEIGHT_PX - 1) return;
-    color_t* DRAM = (color_t *)getDRAM();
+    TColor* DRAM = (TColor *)getDRAM();
     DRAM += y * LCD_WIDTH_PX + x;
     while(h--){
         unsigned w2 = w;
@@ -518,7 +518,7 @@ void fillArea(unsigned x, unsigned y, unsigned w, unsigned h, color_t color) {
     }
 }
 
-void drawRoundRect(int x, int y, int w, int h, short r, color_t color)
+void drawRoundRect(int x, int y, int w, int h, short r, TColor color)
 {
     int max_radius = ((w < h) ? w : h) / 2; // 1/2 minor axis
     if (r > max_radius)
@@ -545,7 +545,7 @@ void drawRoundRect(int x, int y, int w, int h, short r, color_t color)
  @param    r   Radius of corner rounding
  @param    color Specifies what color to draw with. It is in RGB 565 format.
  */
-void fillRoundRect(int x, int y, int w, int h, short r, color_t color)
+void fillRoundRect(int x, int y, int w, int h, short r, TColor color)
 {
     int max_radius = ((w < h) ? w : h) / 2; // 1/2 minor axis
     if (r > max_radius)
@@ -562,11 +562,11 @@ void fillRoundRect(int x, int y, int w, int h, short r, color_t color)
  @param    y   Specifies the y coordinate of the pixel in range of [0,239]
  @param    color Specifies what color the plotted pixel will be. It is in RGBA 8888 format.
  */
-void plot(unsigned x, unsigned y, color_t color) {
-    color_t* DRAM = NULL;
+void plot(unsigned x, unsigned y, TColor color) {
+    TColor* DRAM = NULL;
     
     if (x > LCD_WIDTH_PX - 1 || y > LCD_HEIGHT_PX - 1) return;
-    DRAM = (color_t *)getDRAM();
+    DRAM = (TColor *)getDRAM();
     DRAM += x + y * LCD_WIDTH_PX;
     *DRAM = alphaBlend(color, *DRAM);
 }
@@ -579,7 +579,7 @@ void drawBitmapScaled(int dx, int dy, int width, int height, float scale_x, floa
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             // Access pixel color data from the bitmap array
-            color_t color = bitmap[y * width + x];
+            TColor color = bitmap[y * width + x];
             
             // Draw the pixel at the scaled position
             for (float sy = 0; sy < scale_y; sy += 1.0f) {
@@ -592,6 +592,46 @@ void drawBitmapScaled(int dx, int dy, int width, int height, float scale_x, floa
             }
         }
     }
+}
+
+static int drawGlyph(int16_t x, int16_t y, uint8_t c, TColor color, TFont font) {
+    if (c < font.first || c > font.last) {
+        return 0;
+    }
+    
+    TGlyph *glyph = &font.glyph[(int)c - font.first];
+    
+    int height = glyph->height;
+    int width = glyph->width;
+   
+    x += glyph->xOff;
+    y += glyph->base + font.yAdvance;
+    
+    uint8_t *bitmap = font.bitmap + glyph->offset;
+    uint8_t bitPosition = 1 << 7;
+    while (height--) {
+        for (int xx=0; xx<width; xx++) {
+            if (*bitmap & bitPosition) {
+                plot(x + xx, y, color);
+            }
+            bitPosition >>= 1;
+            if (bitPosition) continue;
+            bitPosition = 1 << 7;
+            bitmap++;
+        }
+        y++;
+    }
+    return glyph->xAdvance;
+}
+
+int drawString(int16_t x, int16_t y, const char *s, TColor color, TFont font) {
+    TColor *c = (TColor *)s;
+    
+    while (*c) {
+        x += drawGlyph(x, y, (uint8_t)*c, color, font);
+        c++;
+    }
+    return x;
 }
 
 

@@ -37,7 +37,7 @@ typedef uint32_t color_t;
 extern "C" {
 #endif
     
-    void *displayRAM(void);
+    void *getDisplayBufferAddress(void);
     
     /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
