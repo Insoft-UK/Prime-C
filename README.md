@@ -9,9 +9,11 @@ This experimental project is expected to undergo significant evolution as develo
 <br />
 <br />
 # UPDATE
-C syntax with some PPL syntax via macros, tho it can be written to resemble PPL syntax more and still compile into pure PPL by using some of the macros like `and` and `or`.
+The syntax of Prime-C closely resembles C and C++ but incorporates some PPL-specific syntax through the use of macros. It can also be adapted to more closely mimic PPL syntax while still compiling into pure PPL by leveraging macros such as AND and OR.
 
-Not all of C fetures be supported such as pointers as PPL dosn't have pointers.  C casting is supported mainly so one can compile and test on macOS tho when compiled for PPL they simply removed as if were never typed.
+However, not all C/C++ features are supported—most notably, pointers are excluded since PPL does not support them. C-style casting is allowed primarily to facilitate compiling and testing on macOS, but when targeting PPL, such casts are simply ignored during compilation as if they were never written.
+
+The development of Prime-C is now largely complete, with the core design finalized. Moving forward, changes will mainly focus on incremental improvements rather than significant revisions.
 
 >[!WARNING]
 Experimental, not to be used for actual software development.
