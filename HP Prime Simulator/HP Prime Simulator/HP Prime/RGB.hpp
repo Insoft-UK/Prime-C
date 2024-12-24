@@ -26,6 +26,7 @@
 #define RGB_P_hpp
 
 #include "graphics.h"
+#include "prime.hpp"
 
 /**
  @brief    Returns a color in ARGB 8888 format from a given RGB[0-255] value, alpha channel runs from 0(opaque) to 255(transparent)
@@ -34,7 +35,7 @@
  @param    b  Blue channel
  @param    a  Alpha channel (optional)
  */
-color_t RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0);
+Int32 RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0);
 
     
 

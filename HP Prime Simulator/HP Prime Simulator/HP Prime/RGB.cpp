@@ -23,8 +23,9 @@
  */
 
 #include "RGB.hpp"
+#include "prime.hpp"
 
-color_t RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha) {
-    color_t color = rgb(r, g, b) << 8 | (color_t)alpha;
+Int32 RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha) {
+    Int32 color = rgb(r, g, b) << 8 | (Int32)alpha;
     return color;
 }

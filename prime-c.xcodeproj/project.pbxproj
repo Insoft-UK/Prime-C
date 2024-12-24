@@ -14,7 +14,6 @@
 		13B13C312B66C2F000F9BCBB /* strings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13B13C2F2B66C2F000F9BCBB /* strings.cpp */; };
 		13C21F9A2A7829C80067CE22 /* preprocessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13C21F982A7829C80067CE22 /* preprocessor.cpp */; };
 		13C21F9D2A783D8D0067CE22 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13C21F9B2A783D8D0067CE22 /* common.cpp */; };
-		13C21FB42A7892540067CE22 /* alias.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13C21FB22A7892540067CE22 /* alias.cpp */; };
 		13F1D8832AB6185400EF623A /* aliases.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F1D8812AB6185400EF623A /* aliases.cpp */; };
 /* End PBXBuildFile section */
 
@@ -53,8 +52,6 @@
 		13C21F992A7829C80067CE22 /* preprocessor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = preprocessor.hpp; sourceTree = "<group>"; };
 		13C21F9B2A783D8D0067CE22 /* common.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = common.cpp; sourceTree = "<group>"; };
 		13C21F9C2A783D8D0067CE22 /* common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = common.hpp; sourceTree = "<group>"; };
-		13C21FB22A7892540067CE22 /* alias.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = alias.cpp; sourceTree = "<group>"; };
-		13C21FB32A7892540067CE22 /* alias.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = alias.hpp; sourceTree = "<group>"; };
 		13F1D8812AB6185400EF623A /* aliases.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = aliases.cpp; sourceTree = "<group>"; };
 		13F1D8822AB6185400EF623A /* aliases.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = aliases.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -113,7 +110,6 @@
 				13C21F9F2A783EA20067CE22 /* include */,
 				1351CC512BF530CE0073FEDF /* calc.cpp */,
 				13C21F982A7829C80067CE22 /* preprocessor.cpp */,
-				13C21FB22A7892540067CE22 /* alias.cpp */,
 				13F1D8812AB6185400EF623A /* aliases.cpp */,
 				13B13C2F2B66C2F000F9BCBB /* strings.cpp */,
 				1384DE7B2B6D70DE0090E24D /* switch.cpp */,
@@ -126,7 +122,6 @@
 			children = (
 				1351CC522BF530CE0073FEDF /* calc.hpp */,
 				13C21F992A7829C80067CE22 /* preprocessor.hpp */,
-				13C21FB32A7892540067CE22 /* alias.hpp */,
 				13F1D8822AB6185400EF623A /* aliases.hpp */,
 				13B13C302B66C2F000F9BCBB /* strings.hpp */,
 				1384DE7C2B6D70DE0090E24D /* switch.hpp */,
@@ -217,7 +212,6 @@
 				13C21F9A2A7829C80067CE22 /* preprocessor.cpp in Sources */,
 				137FB2892A03B06500AEFDF2 /* main.cpp in Sources */,
 				13C21F9D2A783D8D0067CE22 /* common.cpp in Sources */,
-				13C21FB42A7892540067CE22 /* alias.cpp in Sources */,
 				1351CC532BF530CE0073FEDF /* calc.cpp in Sources */,
 				13F1D8832AB6185400EF623A /* aliases.cpp in Sources */,
 				1308E8F62AC48F20001EEC82 /* singleton.cpp in Sources */,

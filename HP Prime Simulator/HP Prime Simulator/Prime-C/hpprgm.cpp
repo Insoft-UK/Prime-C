@@ -39,10 +39,13 @@ Int START()
     BLIT_P(G0, 300, 0, 320, 200, G3, 0, 0, 4, 4);
     
     Int l;
+    Int index = 0;
     List<Int64> grayscale(__LIST_LIMIT);
     for (l = 0; l < 256; l += 2) {
-        grayscale[l] = RGB(l, l, l);
-        grayscale[l + 1] = RGB(l + 1, l + 1, l + 1);
+        grayscale[index] = (Int64)RGB(l + 1, l + 1, l + 1);
+        grayscale[index] = BITSL(grayscale[index], 32);
+        grayscale[index] = BITOR(grayscale[index], RGB(l, l, l));
+        index += 1;
     }
     
     DIMGROB_P(G4, 256, 1, grayscale);

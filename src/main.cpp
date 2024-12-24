@@ -38,7 +38,6 @@
 #include "common.hpp"
 
 #include "preprocessor.hpp"
-#include "alias.hpp"
 #include "strings.hpp"
 #include "calc.hpp"
 
@@ -165,6 +164,13 @@ void translateCLogicalOperatorsToPPL(std::string& str) {
     str = regex_replace(str, std::regex(R"(\^\^)"), " XOR ");
 }
 
+void removeTemplateSyntax(std::string& str) {
+    str = regex_replace(str, std::regex(R"(< *LOCAL *>)"), "");
+}
+
+void removeTypeCastingSyntax(std::string& str) {
+    str = regex_replace(str, std::regex(R"(\( *LOCAL *\))"), "");
+}
 
 // MARK: - Prime-C To PPL Translater...
 void reformatPPLLine(std::string& str) {
@@ -347,7 +353,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     
     capitalizePPLKeywords(ln);
     
-    Alias::parse(ln);
+    
     ln = singleton->aliases.resolveAllAliasesInText(ln);
     
     re = R"(0x([\dA-F]+))";
@@ -368,8 +374,15 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\bLOCAL<LOCAL> ([A-Za-z]\w*)\((\d+)\))";
     ln = std::regex_replace(ln, re, "LOCAL $1:=MAKELIST(0,1,$2)");
     
-    re = R"(\( *LOCAL *\))";
-    ln = std::regex_replace(ln, re, "");
+    
+    removeTemplateSyntax(ln);
+    removeTypeCastingSyntax(ln);
+    
+    if (singleton->switches.parse(ln)) {
+        goto exit;
+    }
+    
+    
     
     re = R"(\bCONST +LOCAL\b)";
     ln = std::regex_replace(ln, re, "CONST");
@@ -402,8 +415,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(^ *\} *ELSE *\{ *$)";
     ln = regex_replace(ln, re, "ELSE");
     
-    re = R"(\botherwise\b)";
-    ln = regex_replace(ln, re, "ELSE");
     
     
     // Scope
@@ -461,7 +472,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     }
     
     if (singleton->scope == Singleton::Scope::Local) {
-        singleton->switches.parse(ln);
+//        singleton->switches.parse(ln);
         
         translateCLogicalOperatorsToPPL(ln);
         
@@ -525,8 +536,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
         }
     }
     
-    re = R"(\<([A-Za-z]\w*)\>)";
-    ln = regex_replace(ln, re, "");
     
     re = R"(\b([A-Za-z]\w*)\.push_back\((.*)\))";
     ln = regex_replace(ln, re, "CONCAT($1,$2)▶$1");
@@ -543,6 +552,7 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\b([A-Za-z]\w*)\.at\((\d+)\))";
     ln = regex_replace(ln, re, "$1($2)");
     
+    exit:
     strings.restoreStrings(ln);
     reformatPPLLine(ln);
     
