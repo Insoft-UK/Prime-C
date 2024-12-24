@@ -9,14 +9,14 @@ This experimental project is expected to undergo significant evolution as develo
 <br />
 <br />
 # UPDATE
-The syntax of Prime-C closely resembles C and C++ but incorporates some PPL-specific syntax through the use of macros. It can also be adapted to more closely mimic PPL syntax while still compiling into pure PPL by leveraging macros such as AND and OR.
+The syntax of **Prime-C** is a cut down of C and C++. It can also be adapted to more closely mimic PPL syntax while still compiling into pure PPL by leveraging macros such as AND and OR.
 
-However, not all C/C++ features are supported—most notably, pointers are excluded since PPL does not support them. C-style casting is allowed primarily to facilitate compiling and testing on macOS, but when targeting PPL, such casts are simply ignored during compilation as if they were never written.
+Not all C/C++ features are supported—most notably, pointers are excluded since PPL does not support them. Type casting is supported simply to facilitate compiling and testing on macOS, but when targeting PPL, such casts are simply ignored during compilation as if they were never written.
 
 The development of Prime-C is now largely complete, with the core design finalized. Moving forward, changes will mainly focus on incremental improvements rather than significant revisions.
 
 >[!WARNING]
-Experimental, not to be used for actual software development.
+Experimental, not intended to be used for actual software development, but can be used instead of P+.
 
 >[!NOTE]
-When compiling for macOS, the project will use a C++ library to emulate PPL functions. A Xcode SpriteKit based macOS app is utilized to create a simulator for the HP Prime environment, allowing one to easly test and debug an HP Prime app written in Prime-C to a certain degree.
+When compiling for macOS, the project will use a C++ library to emulate PPL functions. A Xcode SpriteKit based macOS app is utilized to create a simulator for the HP Prime environment to a certain degree, allowing one to easly test and debug an HP Prime app written in Prime-C to a certain degree.

@@ -1,5 +1,8 @@
 //#define MY_DEFINE "Copyright (c) 2023 Insoft. All rights reserved."
 
+l = 10 * 320 + 10;
+l += 10 * 320 + 10;
+
 Int START()
 {
     List<Int64> blobA = {0x03E07C00007F7FE0,0x007F7FE003E07C00,0x7FFF00007FFF0000,0x00007FFF00007FFF};
@@ -31,9 +34,19 @@ Int START()
     switch (l) {
         case 1:
             break;
+        case 2:
+            switch (l) {
+                case 1:
+                    break;
+                default:
+            }
+            break;
+        case 3:
+            break;
         default:
-            
     }
+    
+    l = 10 * 320 + 10;
     
     return 0;
 }

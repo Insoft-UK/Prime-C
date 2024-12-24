@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 #define VERSION_NUMBER        "1.0.1"
-#define VERSION_CODE          "A0B45-24LN"
-#define NUMERIC_BUILD          10145
-#define INTERNAL_BUILD_CODE   "A0B45"
+#define VERSION_CODE          "A0B57-24LN"
+#define NUMERIC_BUILD          10157
+#define INTERNAL_BUILD_CODE   "A0B57"
 #define DATE                  "2024 December 24"
 #define YEAR                  "2024"

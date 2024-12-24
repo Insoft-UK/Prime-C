@@ -172,6 +172,27 @@ void removeTypeCastingSyntax(std::string& str) {
     str = regex_replace(str, std::regex(R"(\( *LOCAL *\))"), "");
 }
 
+void simplifyCalculations(std::string& str) {
+    std::regex re;
+    std::smatch match;
+    
+    re = R"(\b(?:(?:LOCAL|CONST) +)?[A-Za-z]\w* *:= *([\d \+\-\*\/\(\)]*);)";
+    if (std::regex_search(str, match, re)) {
+        std::string ppl = "[" + match[1].str() + "]";
+        if (Calc::parse(ppl)) {
+            str = str.replace(match.position(1), match.length(1), ppl);
+        }
+    }
+    
+    re = R"(\b[A-Za-z]\w* *:= *[A-Za-z]\w* *[\-\+\*\/] *([\d \+\-\*\/\(\)]*);)";
+    if (std::regex_search(str, match, re)) {
+        std::string ppl = "[" + match[1].str() + "]";
+        if (Calc::parse(ppl)) {
+            str = str.replace(match.position(1), match.length(1), ppl);
+        }
+    }
+}
+
 // MARK: - Prime-C To PPL Translater...
 void reformatPPLLine(std::string& str) {
     std::regex re;
@@ -472,8 +493,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     }
     
     if (singleton->scope == Singleton::Scope::Local) {
-//        singleton->switches.parse(ln);
-        
         translateCLogicalOperatorsToPPL(ln);
         
         re = R"(\bFOR\b *\((.*);(.*);(.*)\) *\{)";
@@ -528,13 +547,8 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
 
     ln = regex_replace(ln, std::regex(R"( *:= *)"), " := ");
     
-    re = R"(\b(?:LOCAL|CONST) +[A-Za-z]\w* *:= *([\d \+\-\*\/\(\)]*);)";
-    if (std::regex_search(ln, match, re)) {
-        std::string ppl = "[" + match[1].str() + "]";
-        if (Calc::parse(ppl)) {
-            ln = ln.replace(match.position(1), match.length(1), ppl);
-        }
-    }
+    
+    simplifyCalculations(ln);
     
     
     re = R"(\b([A-Za-z]\w*)\.push_back\((.*)\))";
