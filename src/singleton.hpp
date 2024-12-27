@@ -44,6 +44,7 @@ public:
     const Scope &scope;
     const int &nestingLevel;
     
+    
     Aliases aliases;
     Switch switches;
     

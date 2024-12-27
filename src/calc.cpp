@@ -42,6 +42,13 @@ static bool isOperator(char c) {
     return (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^');
 }
 
+static bool isExpresionValid(const std::string& expression) {
+    std::regex re;
+    
+    re = R"((?:[\d+\-*\/ πe%&|()]|pi|MOD)+)";
+    return regex_match(expression, re);
+}
+
 // Function to get the precedence of an operator
 static int precedence(char op) {
     if (op == '+' || op == '-') return 1;
@@ -125,14 +132,14 @@ static std::vector<std::string> infixToPostfix(const std::string& expression) {
                 std::cout << MessageType::Error << "#[]: missing '(' in expression '" << expression << "'\n";
                 continue;
             }
-                
+            
             operators.pop();  // Remove the '(' from stack
             continue;
         }
         
         std::cout << MessageType::Error << "#[]: uknown '" << result << "' in expression '" << expression << "'\n";
     }
-
+    
     while (!operators.empty()) {
         output.push_back(std::string(1, operators.top()));
         operators.pop();
@@ -148,14 +155,14 @@ static std::vector<std::string> infixToPostfix(const std::string& expression) {
         }
         std::cout << "\n";
     }
-
+    
     return output;
 }
 
 // Function to evaluate a postfix expression
 static double evaluatePostfix(const std::vector<std::string>& postfix) {
     std::stack<double> values;
-
+    
     for (const std::string& token : postfix) {
         if (isdigit(token[0]) || (token.length() > 1 && token[0] == '-')) {
             values.push(std::stod(token));
@@ -167,7 +174,7 @@ static double evaluatePostfix(const std::vector<std::string>& postfix) {
             values.push(applyOperator(a, b, token[0]));
         }
     }
-
+    
     return values.top();
 }
 
@@ -192,10 +199,10 @@ static uint64_t convertToBitWidth(uint64_t num, int bitWidth) {
         // If bit width is 64 or more, return the number as-is
         return num;
     }
-
+    
     // Create a mask with the desired number of bits
     uint64_t mask = (1ULL << bitWidth) - 1;
-
+    
     // Apply the mask to the number and return the result
     return num & mask;
 }
@@ -205,20 +212,20 @@ static int64_t twosComplement(int64_t num, int bitWidth) {
     if (bitWidth <= 0 || bitWidth > 64) {
         throw std::invalid_argument("Bit width must be between 1 and 64.");
     }
-
+    
     // Create a mask to fit within the specified bit width
     int64_t mask = (1LL << bitWidth) - 1;
-
+    
     // Mask the number to limit it to the bit width
     num &= mask;
-
+    
     // Check if the number is negative in two's complement by checking the most significant bit
     int64_t signBit = 1LL << (bitWidth - 1);
     if (num & signBit) {
         // The number is negative, so we apply two's complement
         num = num - (1LL << bitWidth);  // Subtract 2^bitWidth to get the negative value
     }
-
+    
     return num;
 }
 
@@ -227,7 +234,7 @@ static std::string decimalSignedNumber(int64_t num, int bitWidth) {
     
     num = convertToBitWidth(num, bitWidth);
     num = twosComplement(num, bitWidth);
-
+    
     return std::to_string(num);
 }
 
@@ -235,7 +242,7 @@ static std::string decimalUnsignedNumber(int64_t num, int bitWidth) {
     if (bitWidth < 1 || bitWidth > 64) bitWidth = 64;
     
     num = convertToBitWidth(num, bitWidth);
-
+    
     return std::to_string(num);
 }
 
@@ -326,59 +333,32 @@ bool Calc::parse(std::string& str)
     // Convert any legacy pre-calc instructions to the updated pre-calc format.
     migratePreCalcInstructions(str);
     
-    re = R"(( *\d{1,2})?\[(.*)\])";
-    while (regex_search(str, match, re)) {
-        
-        std::string matched = match.str();
-        
-        convertPPLStyleNumberToBase10(matched);
-        
-        std::string expression;
-        int scale = 0;
-        
-        matched = regex_replace(matched, std::regex(R"(e)"), "2.71828182845904523536028747135266250");
-        matched = regex_replace(matched, std::regex(R"(π|pi)"), "3.14159265358979323846264338327950288");
-        matched = regex_replace(matched, std::regex(R"(MOD)"), "%");
-        matched = regex_replace(matched, std::regex(R"(BITAND)"), "&");
-        matched = regex_replace(matched, std::regex(R"(BITOR)"), "|");
-        
-        strip(matched);
-        
-        auto it = std::sregex_token_iterator {
-            matched.begin(), matched.end(), re, {1, 2}
-        };
-        if (it != std::sregex_token_iterator()) {
-            if (it->matched) {
-                scale = atoi(it->str().c_str());
-            }
-            else {
-                scale = -1; // -1 means auto scale
-            }
-            it++;
-            expression = *it;
-        }
-        
-        parse(expression);
-        
-        
-        expression = separateExpression(expression);
-        double result = evaluateExpression(expression);
-        
-        std::stringstream ss;
-        ss << std::fixed << std::setprecision(scale > -1 ? scale : 10) << result;
-        std::string s = ss.str();
-        
-        if (scale < 0) {
-            s.erase ( s.find_last_not_of('0') + 1, std::string::npos );
-            s.erase ( s.find_last_not_of('.') + 1, std::string::npos );
-        }
-        
-        
-        str = str.replace(match.position(), match.length(), s);
-        return true;
+    if (!isExpresionValid(str)) return false;
+    
+    std::string expression = str;
+    convertPPLStyleNumberToBase10(expression);
+    
+    expression = regex_replace(expression, std::regex(R"(e)"), "2.71828182845904523536028747135266250");
+    expression = regex_replace(expression, std::regex(R"(π|pi)"), "3.14159265358979323846264338327950288");
+    expression = regex_replace(expression, std::regex(R"(MOD)"), "%");
+    expression = regex_replace(expression, std::regex(R"(BITAND)"), "&");
+    expression = regex_replace(expression, std::regex(R"(BITOR)"), "|");
+    
+    strip(expression);
+    
+    expression = separateExpression(expression);
+    double result = evaluateExpression(expression);
+    
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(10) << result;
+    expression = ss.str();
+    expression.erase ( expression.find_last_not_of('0') + 1, std::string::npos );
+    if (expression.at(expression.length() - 1) == '.') {
+        expression.resize(expression.length() - 1);
     }
-
-    return false;
+    str = expression;
+    
+    return true;
 }
 
 

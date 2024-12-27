@@ -98,31 +98,19 @@ bool Switch::parse(std::string& str) {
     if (_level.front() == singleton->nestingLevel) {
         re = R"(^ *\} *$)";
         if (regex_match(str, match, re)) {
-//            if (countLeadingCharacters(str, ' ') == exp.indeted && _level.back() == Singleton::shared()->nestingLevel) {
-                if (verbose) std::cout
-                    << MessageType::Verbose
-                    << "switch"
-                    << ": '" << _expressions.back().expression << "' expression removed!\n";
-                _expressions.pop_back();
-                _level.pop_back();
+            if (verbose) std::cout
+                << MessageType::Verbose
+                << "switch"
+                << ": '" << _expressions.back().expression << "' expression removed!\n";
+            _expressions.pop_back();
+            _level.pop_back();
             str.replace(match.position(), match.str().length(),"END;");
-                return true;
-//            }
+            return true;
         }
     }
     
     
-//    re = R"(^ *\} *$)";
-//    if (regex_match(str, re)) {
-//        if (countLeadingCharacters(str, ' ') == exp.indeted && _level.back() == Singleton::shared()->nestingLevel) {
-//            if (verbose) std::cout
-//                << MessageType::Verbose
-//                << "switch"
-//                << ": '" << _expressions.back().expression << "' expression removed!\n";
-//            _expressions.pop_back();
-//            _level.pop_back();
-//        }
-//    }
+
     
     return false;
 }

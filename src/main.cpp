@@ -176,9 +176,9 @@ void simplifyCalculations(std::string& str) {
     std::regex re;
     std::smatch match;
     
-    re = R"(\b(?:(?:LOCAL|CONST) +)?[A-Za-z]\w* *:= *([\d \+\-\*\/\(\)]*);)";
+    re = R"(\b(?:(?:LOCAL|CONST) +)?[A-Za-z]\w* *:= *(.+);)";
     if (std::regex_search(str, match, re)) {
-        std::string ppl = "[" + match[1].str() + "]";
+        std::string ppl = match[1].str();//"[" + match[1].str() + "]";
         if (Calc::parse(ppl)) {
             str = str.replace(match.position(1), match.length(1), ppl);
         }
@@ -190,6 +190,21 @@ void simplifyCalculations(std::string& str) {
         if (Calc::parse(ppl)) {
             str = str.replace(match.position(1), match.length(1), ppl);
         }
+    }
+    
+    re = R"(\b[A-Za-z]\w* *\((.+)\))";
+    if (std::regex_search(str, match, re)) {
+        re = R"([^,]+(?=[^,]*))";
+        std::smatch matches;
+        std::string s = match[1].str();
+        
+        for(std::sregex_iterator it = std::sregex_iterator(s.begin(), s.end(), re); it != std::sregex_iterator(); ++it) {
+            std::string expression = it->str();
+            if (Calc::parse(expression)) {
+                s = s.replace(it->position(), it->length(), expression);
+            }
+        }
+        str = str.replace(match.position(1), match.length(1), s);
     }
 }
 
@@ -383,9 +398,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(0b([01]+))";
     ln = std::regex_replace(ln, re, "#$1:64b");
     
-    re = R"(\( *G0 *,)";
-    ln = std::regex_replace(ln, re, "(");
-    
     re = R"(\b(sub|function) +)";
     ln = std::regex_replace(ln, re, "");
     
@@ -408,11 +420,6 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     re = R"(\bCONST +LOCAL\b)";
     ln = std::regex_replace(ln, re, "CONST");
     
-    re = R"(\btrue\b)";
-    ln = std::regex_replace(ln, re, "1");
-    
-    re = R"(\bfalse\b)";
-    ln = std::regex_replace(ln, re, "0");
     
     re = R"(\bSLEEP *;)";
     ln = std::regex_replace(ln, re, "");
@@ -440,23 +447,32 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
     
     // Scope
     
-    re = R"(^\{ *$)";
-    ln = regex_replace(ln, re, "BEGIN");
+    if (singleton->nestingLevel == 0) {
+        re = R"(^\{ *$)";
+        ln = regex_replace(ln, re, "BEGIN");
+    }
     
-    re = R"(^\} *$)";
-    ln = regex_replace(ln, re, "END");
+    if (singleton->nestingLevel == 1) {
+        re = R"(^\} *$)";
+        ln = regex_replace(ln, re, "END");
+    }
     
-    re = R"((?:(?:\)|REPEAT|CASE) *\{|^ *BEGIN) *$)";
+    re = R"((?:(?:\)|REPEAT|CASE|DO) *\{|^ *BEGIN) *$)";
     if (std::regex_search(ln, re)) {
         singleton->setNestingLevel(singleton->nestingLevel + 1);
     }
     
-    re = R"(^ *(?:\}|END|\} *UNTIL\(.+\);) *$)";
+    re = R"(^ *(?:\}|END|\} *(?:UNTIL|WHILE) *\(.+\);) *$)";
     if (std::regex_search(ln, re)) {
-        if (std::regex_search(ln, match, std::regex(R"(^ *\} *UNTIL\((.+)\); *$)"))) {
+        if (std::regex_search(ln, match, std::regex(R"(^ *\} *(UNTIL|WHILE) *\((.+)\); *$)"))) {
             std::string statement;
-            statement = trim_copy(match[1].str());
-            ln = ln.replace(match.position(), match.length(), "UNTIL " + statement + ";");
+            statement = trim_copy(match[2].str());
+            if (match[1].str() == "WHILE") {
+                ln = ln.replace(match.position(), match.length(), "UNTIL NOT(" + statement + ");");
+            } else {
+                ln = ln.replace(match.position(), match.length(), "UNTIL " + statement + ";");
+            }
+            
         }
         
         if (closingScope.empty()) {
@@ -537,7 +553,9 @@ void translatePrimeCLine(std::string& ln, std::ofstream& outfile) {
             ln = ln.replace(match.position(), match.length(), ppl);
         }
         
-        re = R"(\bREPEAT\b *\{)";
+        
+        
+        re = R"(\b(?:REPEAT|DO)\b *\{)";
         if (std::regex_search(ln, match, re)) {
             closingScope.push_back("");
             ln = ln.replace(match.position(), match.length(), "REPEAT");
@@ -707,6 +725,8 @@ void translatePrimeCToPPL(const std::string& pathname, std::ofstream& outfile)
     
     infile.open(pathname,std::ios::in);
     if (!infile.is_open()) exit(2);
+    
+    writeUTF16(std::string("#pragma mode( separator(.,;) integer(h64) )\n"), outfile);
     
     while(getline(infile, utf8)) {
         if (isPythonBlock(utf8)) {
@@ -899,6 +919,11 @@ int main(int argc, char **argv) {
     preprocessor.parse(str);
     str = R"(#define __LIST_LIMIT 10000)";
     preprocessor.parse(str);
+    str = R"(#define true 1)";
+    preprocessor.parse(str);
+    str = R"(#define false 0)";
+    preprocessor.parse(str);
+    
     
     
     translatePrimeCToPPL(in_filename, outfile);
