@@ -92,6 +92,7 @@ echo "Numeric Build Number: $version"
 echo "Internal Build Code: ${major_letter}${minor}${patch_letter}${build}"
 
 # Output the generated version code to file.
+cd src
 echo "// The MIT License (MIT)" > version_code.h
 echo "// " >> version_code.h
 echo "// Copyright (c) 2024 Insoft. All rights reserved." >> version_code.h

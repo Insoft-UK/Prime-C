@@ -35,7 +35,6 @@
 		13166E852BA12E5E00D1E6F0 /* examples */ = {isa = PBXFileReference; lastKnownFileType = folder; path = examples; sourceTree = "<group>"; };
 		13231FCA2D0E1E9000A7AAE2 /* hpprgm.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = hpprgm.cpp; path = "HP Prime Simulator/HP Prime Simulator/Prime-C/hpprgm.cpp"; sourceTree = "<group>"; };
 		132320872D14CC4C00A7AAE2 /* version.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = version.txt; sourceTree = "<group>"; };
-		132320882D14CCD800A7AAE2 /* version_code.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = version_code.h; sourceTree = "<group>"; };
 		1351CC512BF530CE0073FEDF /* calc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calc.cpp; sourceTree = "<group>"; };
 		1351CC522BF530CE0073FEDF /* calc.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = calc.hpp; sourceTree = "<group>"; };
 		1351CC552BFC0E180073FEDF /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -73,7 +72,6 @@
 				138F54D22C976F10009357F9 /* LICENSE */,
 				1351CC552BFC0E180073FEDF /* README.md */,
 				132320872D14CC4C00A7AAE2 /* version.txt */,
-				132320882D14CCD800A7AAE2 /* version_code.h */,
 				137FB2942A046E8E00AEFDF2 /* prime-c.entitlements */,
 				13231FCA2D0E1E9000A7AAE2 /* hpprgm.cpp */,
 				13166E852BA12E5E00D1E6F0 /* examples */,

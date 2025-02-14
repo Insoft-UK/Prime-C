@@ -292,46 +292,12 @@ static void convertPPLStyleNumberToBase10(std::string& str) {
     }
 }
 
-static void migratePreCalcInstructions(std::string& str) {
-    std::regex re;
-    std::smatch match;
-    std::string s;
-    
-    re = R"(#\[(.*)\](?::(\d+))?)";
-    
-    while (regex_search(str, match, re)) {
-        std::string expression;
-        std::string matched = match.str();
-        int scale = 0;
-        
-        auto it = std::sregex_token_iterator {
-            matched.begin(), matched.end(), re, {1, 2}
-        };
-        if (it != std::sregex_token_iterator()) {
-            expression = *it++;
-            if (it->matched) {
-                scale = atoi(it->str().c_str());
-            }
-            else {
-                scale = 0; // 0 means auto scale
-            }
-        }
-        migratePreCalcInstructions(expression);
-        str = str.replace(match.position(), match.length(), "\\" + std::to_string(scale) + "[" + expression + "]");
-        return;
-    }
-}
-
-
 // MARK: -
 
 bool Calc::parse(std::string& str)
 {
     std::regex re;
     std::smatch match;
-    
-    // Convert any legacy pre-calc instructions to the updated pre-calc format.
-    migratePreCalcInstructions(str);
     
     if (!isExpresionValid(str)) return false;
     
@@ -340,9 +306,6 @@ bool Calc::parse(std::string& str)
     
     expression = regex_replace(expression, std::regex(R"(e)"), "2.71828182845904523536028747135266250");
     expression = regex_replace(expression, std::regex(R"(π|pi)"), "3.14159265358979323846264338327950288");
-    expression = regex_replace(expression, std::regex(R"(MOD)"), "%");
-    expression = regex_replace(expression, std::regex(R"(BITAND)"), "&");
-    expression = regex_replace(expression, std::regex(R"(BITOR)"), "|");
     
     strip(expression);
     
